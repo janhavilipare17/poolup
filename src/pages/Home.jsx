@@ -3,6 +3,101 @@ import { useState, useEffect } from 'react'
 import { getGoals } from '../utils/storage'
 import { useScreenSize } from '../hooks/useScreenSize'
 
+import { useWallet, setGlobalWallet } from '../hooks/useWallet'
+
+function WalletButton() {
+  const wallet = useWallet()
+  const [showModal, setShowModal] = useState(false)
+  const { isMobile } = useScreenSize()
+
+  const shortAddr = (addr) => addr ? addr.slice(0, 4) + '...' + addr.slice(-4) : ''
+
+  const connectWallet = async (walletName) => {
+    try {
+      if (walletName === 'Freighter') {
+        const freighter = await import('@stellar/freighter-api')
+        const { isConnected } = await freighter.isConnected()
+        if (!isConnected) {
+          alert('Please unlock your Freighter wallet!')
+          return
+        }
+        const { address } = await freighter.requestAccess()
+        setGlobalWallet(address)
+        localStorage.setItem('poolup_wallet', address)
+        setShowModal(false)
+      } else if (walletName === 'xBull') {
+        await window.xBullSDK.connect({ canRequestPublicKey: true, canRequestSign: true })
+        const address = await window.xBullSDK.getPublicKey()
+        setGlobalWallet(address)
+        localStorage.setItem('poolup_wallet', address)
+        setShowModal(false)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const disconnect = () => {
+    setGlobalWallet(null)
+    localStorage.removeItem('poolup_wallet')
+  }
+
+  return (
+    <>
+      {wallet ? (
+        <div style={{ ...walletStyles.badge, width: isMobile ? '100%' : 'auto', justifyContent: 'center' }} onClick={disconnect} title="Click to disconnect">
+          <div style={walletStyles.dot}></div>
+          {shortAddr(wallet)}
+          <span style={{ fontSize: '11px', color: '#4a5a7a' }}>· tap to disconnect</span>
+        </div>
+      ) : (
+        <button style={{ ...walletStyles.btn, width: isMobile ? '100%' : 'auto' }} onClick={() => setShowModal(true)}>
+          Connect Wallet
+        </button>
+      )}
+
+      {showModal && (
+        <div style={walletStyles.overlay} onClick={() => setShowModal(false)}>
+          <div style={walletStyles.modal} onClick={e => e.stopPropagation()}>
+            <button style={walletStyles.closeBtn} onClick={() => setShowModal(false)}>✕</button>
+            <div style={walletStyles.modalIcon}>🔗</div>
+            <div style={walletStyles.modalTitle}>Connect Wallet</div>
+            <div style={walletStyles.modalSub}>Choose your Stellar wallet to connect to PoolUp.</div>
+            {[
+              { name: 'Freighter', icon: '⭐', desc: 'Official Stellar wallet browser extension' },
+              { name: 'xBull', icon: '🐂', desc: 'Multi-platform Stellar wallet' },
+            ].map(w => (
+              <div key={w.name} style={walletStyles.option} onClick={() => connectWallet(w.name)}>
+                <div style={walletStyles.optionLogo}>{w.icon}</div>
+                <div>
+                  <div style={walletStyles.optionName}>{w.name}</div>
+                  <div style={walletStyles.optionDesc}>{w.desc}</div>
+                </div>
+                <span style={{ marginLeft: 'auto', color: '#4a5a7a' }}>→</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+const walletStyles = {
+  btn: { background: 'linear-gradient(135deg, #06d6a0, #4f8ef7)', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" },
+  badge: { background: '#1a2235', border: '1px solid #253550', padding: '12px 20px', borderRadius: '12px', fontSize: '13px', color: '#06d6a0', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'monospace', cursor: 'pointer' },
+  dot: { width: '7px', height: '7px', background: '#06d6a0', borderRadius: '50%' },
+  overlay: { position: 'fixed', inset: 0, zIndex: 999, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' },
+  modal: { background: '#111827', border: '1px solid #253550', borderRadius: '24px', padding: '2rem', width: '100%', maxWidth: '420px', position: 'relative' },
+  closeBtn: { position: 'absolute', top: '1rem', right: '1rem', background: '#1a2235', border: '1px solid #1e2d47', color: '#8a9cc4', width: '28px', height: '28px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  modalIcon: { fontSize: '2.5rem', marginBottom: '.75rem', textAlign: 'center' },
+  modalTitle: { fontFamily: "'Syne', sans-serif", fontSize: '1.4rem', fontWeight: 800, marginBottom: '.5rem', textAlign: 'center' },
+  modalSub: { fontSize: '13px', color: '#8a9cc4', marginBottom: '1.5rem', fontWeight: 300, lineHeight: 1.6, textAlign: 'center' },
+  option: { background: '#080d1c', border: '1px solid #1e2d47', borderRadius: '14px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', marginBottom: '.75rem' },
+  optionLogo: { width: '40px', height: '40px', borderRadius: '10px', background: '#1a2235', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 },
+  optionName: { fontWeight: 500, fontSize: '14px', color: '#f0f4ff', marginBottom: '2px' },
+  optionDesc: { fontSize: '12px', color: '#4a5a7a' },
+}
 function Home() {
   const navigate = useNavigate()
   const { isMobile } = useScreenSize()
@@ -39,14 +134,14 @@ function Home() {
         </p>
 
         <div style={{ ...styles.actions, flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', padding: isMobile ? '0 1rem' : '0' }}>
-          <button style={{ ...styles.btnPrimary, width: isMobile ? '100%' : 'auto' }} onClick={() => navigate('/create')}>
-            Create a Goal
-          </button>
-          <button style={{ ...styles.btnSecondary, width: isMobile ? '100%' : 'auto' }} onClick={() => navigate('/goals')}>
-            Explore Goals
-          </button>
-        </div>
-
+  <button style={{ ...styles.btnPrimary, width: isMobile ? '100%' : 'auto' }} onClick={() => navigate('/create')}>
+    Create a Goal
+  </button>
+  <button style={{ ...styles.btnSecondary, width: isMobile ? '100%' : 'auto' }} onClick={() => navigate('/goals')}>
+    Explore Goals
+  </button>
+  <WalletButton />
+</div>
         <div style={{ ...styles.statsRow, gap: isMobile ? '1.5rem' : '3rem' }}>
           <div style={styles.statItem}>
             <div style={styles.statNum}>{stats.goals}</div>
