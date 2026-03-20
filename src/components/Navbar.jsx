@@ -8,7 +8,6 @@ function Navbar() {
   const { isMobile } = useScreenSize()
   const [wallet, setWallet] = useState(localStorage.getItem('poolup_wallet') || null)
   const [showModal, setShowModal] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
 
   const connectWallet = async (walletName) => {
     try {
@@ -52,69 +51,26 @@ function Navbar() {
   return (
     <>
       <nav style={styles.nav}>
-        <Link to="/" style={styles.logo}>PoolUp</Link>
+        <Link to="/" style={{ ...styles.logo, fontSize: isMobile ? '16px' : '20px' }}>PoolUp</Link>
 
-        {/* desktop links — hidden on mobile */}
-        {!isMobile && (
-          <div style={styles.desktopLinks}>
-            <Link to="/" style={{ ...styles.link, ...(location.pathname === '/' ? styles.activeLink : {}) }}>Home</Link>
-            <Link to="/goals" style={{ ...styles.link, ...(location.pathname === '/goals' ? styles.activeLink : {}) }}>Explore</Link>
-            <Link to="/create" style={{ ...styles.link, ...(location.pathname === '/create' ? styles.activeLink : {}) }}>Create</Link>
-            <Link to="/dashboard" style={{ ...styles.link, ...(location.pathname === '/dashboard' ? styles.activeLink : {}) }}>Dashboard</Link>
-            {wallet ? (
-              <div style={styles.walletBadge} onClick={disconnectWallet} title="Click to disconnect">
-                <div style={styles.walletDot}></div>
-                {shortAddr(wallet)}
-              </div>
-            ) : (
-              <button style={styles.connectBtn} onClick={() => setShowModal(true)}>
-                Connect Wallet
-              </button>
-            )}
-          </div>
-        )}
+        <div style={styles.links}>
+          <Link to="/" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/' ? styles.activeLink : {}) }}>Home</Link>
+          <Link to="/goals" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/goals' ? styles.activeLink : {}) }}>Explore</Link>
+          <Link to="/create" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/create' ? styles.activeLink : {}) }}>Create</Link>
+          <Link to="/dashboard" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/dashboard' ? styles.activeLink : {}) }}>Dashboard</Link>
 
-        {/* mobile right side */}
-        {isMobile && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {wallet && (
-              <div style={{ ...styles.walletBadge, fontSize: '11px', padding: '4px 10px' }} onClick={disconnectWallet}>
-                <div style={styles.walletDot}></div>
-                {shortAddr(wallet)}
-              </div>
-            )}
-            <button style={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-              {menuOpen ? '✕' : '☰'}
-            </button>
-          </div>
-        )}
-      </nav>
-
-      {/* mobile menu dropdown */}
-      {isMobile && menuOpen && (
-        <div style={styles.mobileMenu}>
-          {[
-            { to: '/', label: 'Home' },
-            { to: '/goals', label: 'Explore' },
-            { to: '/create', label: 'Create' },
-            { to: '/dashboard', label: 'Dashboard' },
-          ].map(item => (
-            <Link
-              key={item.to}
-              to={item.to}
-              style={{ ...styles.mobileLink, ...(location.pathname === item.to ? styles.mobileLinkActive : {}) }}
-              onClick={() => setMenuOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
-          {!wallet && (
-            <button style={styles.mobileConnectBtn} onClick={() => { setShowModal(true); setMenuOpen(false) }}>
-              Connect Wallet
+          {wallet ? (
+            <div style={{ ...styles.walletBadge, fontSize: isMobile ? '11px' : '12px', padding: isMobile ? '5px 8px' : '6px 14px' }} onClick={disconnectWallet} title="Click to disconnect">
+              <div style={styles.walletDot}></div>
+              {shortAddr(wallet)}
+            </div>
+          ) : (
+            <button style={{ ...styles.connectBtn, fontSize: isMobile ? '11px' : '13px', padding: isMobile ? '6px 10px' : '8px 20px' }} onClick={() => setShowModal(true)}>
+              {isMobile ? 'Connect' : 'Connect Wallet'}
             </button>
           )}
         </div>
-      )}
+      </nav>
 
       {/* wallet modal */}
       {showModal && (
@@ -153,68 +109,39 @@ function Navbar() {
 const styles = {
   nav: {
     position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-    height: '64px', padding: '0 1.5rem',
+    height: '64px', padding: '0 1rem',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
     borderBottom: '1px solid rgba(255,255,255,0.04)',
     background: 'rgba(4,6,15,0.95)', backdropFilter: 'blur(20px)',
   },
   logo: {
-    fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800,
+    fontFamily: "'Syne', sans-serif", fontWeight: 800,
     background: 'linear-gradient(135deg, #4f8ef7, #7c3aed)',
     WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text', textDecoration: 'none',
+    backgroundClip: 'text', textDecoration: 'none', flexShrink: 0,
   },
-  desktopLinks: { display: 'flex', alignItems: 'center', gap: '8px' },
-  hamburger: {
-    background: 'transparent', border: '1px solid #1e2d47',
-    color: '#8a9cc4', width: '36px', height: '36px',
-    borderRadius: '8px', cursor: 'pointer', fontSize: '16px',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontFamily: "'DM Sans', sans-serif",
-  },
+  links: { display: 'flex', alignItems: 'center', gap: '2px' },
   link: {
-    color: '#8a9cc4', fontSize: '14px', padding: '6px 14px',
-    borderRadius: '8px', textDecoration: 'none', transition: 'all .2s',
-    fontFamily: "'DM Sans', sans-serif",
+    color: '#8a9cc4', borderRadius: '8px',
+    textDecoration: 'none', transition: 'all .2s',
+    fontFamily: "'DM Sans', sans-serif", whiteSpace: 'nowrap',
   },
   activeLink: { color: '#f0f4ff', background: 'rgba(255,255,255,0.05)' },
   connectBtn: {
     background: 'linear-gradient(135deg, #4f8ef7, #7c3aed)',
-    color: '#fff', border: 'none', padding: '8px 20px',
-    borderRadius: '10px', fontSize: '13px', fontWeight: 500,
+    color: '#fff', border: 'none',
+    borderRadius: '10px', fontWeight: 500,
     cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
+    whiteSpace: 'nowrap',
   },
   walletBadge: {
     background: '#1a2235', border: '1px solid #253550',
-    padding: '6px 14px', borderRadius: '10px', fontSize: '12px',
+    borderRadius: '10px',
     color: '#06d6a0', fontWeight: 500,
-    display: 'flex', alignItems: 'center', gap: '6px',
-    fontFamily: 'monospace', cursor: 'pointer',
+    display: 'flex', alignItems: 'center', gap: '5px',
+    fontFamily: 'monospace', cursor: 'pointer', whiteSpace: 'nowrap',
   },
-  walletDot: { width: '7px', height: '7px', background: '#06d6a0', borderRadius: '50%' },
-  mobileMenu: {
-    position: 'fixed', top: '64px', left: 0, right: 0, zIndex: 99,
-    background: 'rgba(4,6,15,0.98)', backdropFilter: 'blur(20px)',
-    borderBottom: '1px solid #1e2d47',
-    padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '8px',
-  },
-  mobileLink: {
-    color: '#8a9cc4', fontSize: '15px', padding: '12px 16px',
-    borderRadius: '10px', textDecoration: 'none',
-    fontFamily: "'DM Sans', sans-serif",
-    border: '1px solid transparent',
-  },
-  mobileLinkActive: {
-    color: '#f0f4ff', background: 'rgba(255,255,255,0.05)',
-    border: '1px solid #1e2d47',
-  },
-  mobileConnectBtn: {
-    background: 'linear-gradient(135deg, #4f8ef7, #7c3aed)',
-    color: '#fff', border: 'none', padding: '12px 20px',
-    borderRadius: '10px', fontSize: '14px', fontWeight: 500,
-    cursor: 'pointer', fontFamily: "'DM Sans', sans-serif",
-    marginTop: '4px', width: '100%',
-  },
+  walletDot: { width: '6px', height: '6px', background: '#06d6a0', borderRadius: '50%', flexShrink: 0 },
   overlay: {
     position: 'fixed', inset: 0, zIndex: 999,
     background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)',
