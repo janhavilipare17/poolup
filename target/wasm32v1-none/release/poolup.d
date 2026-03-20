@@ -1,0 +1,1 @@
+C:\Users\Janhavi\OneDrive\Desktop\steller\ internship\poolup-contract\target\wasm32v1-none\release\poolup.wasm: C:\Users\Janhavi\OneDrive\Desktop\steller\ internship\poolup-contract\contracts\poolup\src\lib.rs
