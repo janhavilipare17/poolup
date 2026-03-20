@@ -1,25 +1,22 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { getGoals } from '../utils/storage'
+import { useScreenSize } from '../hooks/useScreenSize'
 
 function Home() {
   const navigate = useNavigate()
-const [stats, setStats] = useState({ goals: 0, pooled: 0, users: 0 })
+  const { isMobile } = useScreenSize()
+  const [stats, setStats] = useState({ goals: 0, pooled: 0, users: 0 })
 
-useEffect(() => {
-  const goals = getGoals()
-  const totalPooled = goals.reduce((sum, g) => sum + g.collected, 0)
-  const totalUsers = goals.reduce((sum, g) => sum + g.contributors.length, 0)
-  setStats({
-    goals: goals.length,
-    pooled: totalPooled,
-    users: totalUsers
-  })
-}, [])
+  useEffect(() => {
+    const goals = getGoals()
+    const totalPooled = goals.reduce((sum, g) => sum + g.collected, 0)
+    const totalUsers = goals.reduce((sum, g) => sum + g.contributors.length, 0)
+    setStats({ goals: goals.length, pooled: totalPooled, users: totalUsers })
+  }, [])
+
   return (
     <div style={styles.wrapper}>
-
-      {/* orb backgrounds */}
       <div style={styles.orb1}></div>
       <div style={styles.orb2}></div>
       <div style={styles.orb3}></div>
@@ -31,54 +28,53 @@ useEffect(() => {
           Built on Stellar · Soroban Smart Contracts
         </div>
 
-        <h1 style={styles.h1}>
+        <h1 style={{ ...styles.h1, fontSize: isMobile ? '2.5rem' : 'clamp(3rem, 8vw, 6rem)' }}>
           Pool money.<br />
           <span style={styles.gradient}>Unlock together.</span>
         </h1>
 
-        <p style={styles.sub}>
+        <p style={{ ...styles.sub, fontSize: isMobile ? '1rem' : '1.1rem', padding: isMobile ? '0 1rem' : '0' }}>
           Create a shared savings goal, everyone locks their share on-chain.
           Funds release automatically when the target is hit — no trust needed.
         </p>
 
-        <div style={styles.actions}>
-          <button style={styles.btnPrimary} onClick={() => navigate('/create')}>
+        <div style={{ ...styles.actions, flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', padding: isMobile ? '0 1rem' : '0' }}>
+          <button style={{ ...styles.btnPrimary, width: isMobile ? '100%' : 'auto' }} onClick={() => navigate('/create')}>
             Create a Goal
           </button>
-          <button style={styles.btnSecondary} onClick={() => navigate('/goals')}>
+          <button style={{ ...styles.btnSecondary, width: isMobile ? '100%' : 'auto' }} onClick={() => navigate('/goals')}>
             Explore Goals
           </button>
         </div>
 
-       <div style={styles.statsRow}>
-  <div style={styles.statItem}>
-    <div style={styles.statNum}>{stats.goals}</div>
-    <div style={styles.statLabel}>Goals Created</div>
-  </div>
-  <div style={styles.statItem}>
-    <div style={styles.statNum}>{stats.pooled} XLM</div>
-    <div style={styles.statLabel}>Total Pooled</div>
-  </div>
-  <div style={styles.statItem}>
-    <div style={styles.statNum}>{stats.users}</div>
-    <div style={styles.statLabel}>Contributors</div>
-  </div>
-  <div style={styles.statItem}>
-    <div style={styles.statNum}>~0</div>
-    <div style={styles.statLabel}>Gas Fees</div>
-  </div>
-</div>
+        <div style={{ ...styles.statsRow, gap: isMobile ? '1.5rem' : '3rem' }}>
+          <div style={styles.statItem}>
+            <div style={styles.statNum}>{stats.goals}</div>
+            <div style={styles.statLabel}>Goals Created</div>
+          </div>
+          <div style={styles.statItem}>
+            <div style={styles.statNum}>{stats.pooled} XLM</div>
+            <div style={styles.statLabel}>Total Pooled</div>
+          </div>
+          <div style={styles.statItem}>
+            <div style={styles.statNum}>{stats.users}</div>
+            <div style={styles.statLabel}>Contributors</div>
+          </div>
+          <div style={styles.statItem}>
+            <div style={styles.statNum}>~0</div>
+            <div style={styles.statLabel}>Gas Fees</div>
+          </div>
+        </div>
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={styles.section}>
+      <section style={{ ...styles.section, padding: isMobile ? '3rem 1rem' : '5rem 2rem' }}>
         <div style={styles.sectionLabel}>How it works</div>
-        <h2 style={styles.sectionTitle}>Simple as 1, 2, 3</h2>
+        <h2 style={{ ...styles.sectionTitle, fontSize: isMobile ? '1.8rem' : 'clamp(2rem, 4vw, 3rem)' }}>Simple as 1, 2, 3</h2>
         <p style={styles.sectionSub}>
           No banks, no trust, no "I'll pay you later." The smart contract handles everything.
         </p>
-
-        <div style={styles.stepsGrid}>
+        <div style={{ ...styles.stepsGrid, gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))' }}>
           {steps.map((step, i) => (
             <div key={i} style={styles.stepCard}>
               <div style={styles.stepNum}>0{i + 1}</div>
@@ -91,10 +87,10 @@ useEffect(() => {
       </section>
 
       {/* WHY STELLAR */}
-      <section style={{ ...styles.section, paddingTop: 0 }}>
+      <section style={{ ...styles.section, paddingTop: 0, padding: isMobile ? '0 1rem 3rem' : '0 2rem 5rem' }}>
         <div style={styles.sectionLabel}>Why Stellar</div>
-        <h2 style={styles.sectionTitle}>Built for real people</h2>
-        <div style={styles.whyGrid}>
+        <h2 style={{ ...styles.sectionTitle, fontSize: isMobile ? '1.8rem' : 'clamp(2rem, 4vw, 3rem)' }}>Built for real people</h2>
+        <div style={{ ...styles.whyGrid, gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fit, minmax(220px, 1fr))' }}>
           {whys.map((w, i) => (
             <div key={i} style={styles.whyCard}>
               <div style={styles.whyIcon}>{w.icon}</div>
@@ -106,16 +102,15 @@ useEffect(() => {
       </section>
 
       {/* CTA */}
-      <section style={styles.ctaSection}>
-        <div style={styles.ctaCard}>
-          <h2 style={styles.ctaTitle}>Ready to pool up?</h2>
+      <section style={{ ...styles.ctaSection, padding: isMobile ? '2rem 1rem 4rem' : '3rem 2rem 6rem' }}>
+        <div style={{ ...styles.ctaCard, padding: isMobile ? '2rem 1.5rem' : '3rem' }}>
+          <h2 style={{ ...styles.ctaTitle, fontSize: isMobile ? '1.5rem' : '2rem' }}>Ready to pool up?</h2>
           <p style={styles.ctaSub}>Create your first goal in 30 seconds. Share with your group. Done.</p>
-          <button style={styles.btnPrimary} onClick={() => navigate('/create')}>
+          <button style={{ ...styles.btnPrimary, width: isMobile ? '100%' : 'auto' }} onClick={() => navigate('/create')}>
             Create your first goal →
           </button>
         </div>
       </section>
-
     </div>
   )
 }
@@ -139,37 +134,37 @@ const styles = {
   orb1: { position: 'fixed', width: '600px', height: '600px', background: 'rgba(79,142,247,.07)', borderRadius: '50%', filter: 'blur(120px)', top: '-200px', right: '-100px', pointerEvents: 'none', zIndex: 0 },
   orb2: { position: 'fixed', width: '500px', height: '500px', background: 'rgba(124,58,237,.06)', borderRadius: '50%', filter: 'blur(120px)', bottom: '-150px', left: '-100px', pointerEvents: 'none', zIndex: 0 },
   orb3: { position: 'fixed', width: '300px', height: '300px', background: 'rgba(6,214,160,.05)', borderRadius: '50%', filter: 'blur(120px)', top: '40%', left: '40%', pointerEvents: 'none', zIndex: 0 },
-  hero: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '5rem 2rem 3rem', position: 'relative', zIndex: 1 },
-  badge: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(79,142,247,.1)', border: '1px solid rgba(79,142,247,.2)', padding: '6px 16px', borderRadius: '100px', fontSize: '12px', color: '#4f8ef7', marginBottom: '2rem', fontWeight: 500, letterSpacing: '.05em', textTransform: 'uppercase' },
+  hero: { minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '5rem 1.5rem 3rem', position: 'relative', zIndex: 1 },
+  badge: { display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(79,142,247,.1)', border: '1px solid rgba(79,142,247,.2)', padding: '6px 16px', borderRadius: '100px', fontSize: '11px', color: '#4f8ef7', marginBottom: '2rem', fontWeight: 500, letterSpacing: '.05em', textTransform: 'uppercase' },
   badgeDot: { width: '6px', height: '6px', background: '#4f8ef7', borderRadius: '50%', display: 'inline-block' },
-  h1: { fontFamily: "'Syne', sans-serif", fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 800, lineHeight: 1.05, letterSpacing: '-.03em', marginBottom: '1.5rem' },
+  h1: { fontFamily: "'Syne', sans-serif", fontWeight: 800, lineHeight: 1.05, letterSpacing: '-.03em', marginBottom: '1.5rem' },
   gradient: { background: 'linear-gradient(135deg, #4f8ef7, #7c3aed, #06d6a0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' },
-  sub: { fontSize: '1.1rem', color: '#8a9cc4', maxWidth: '520px', marginBottom: '2.5rem', fontWeight: 300, lineHeight: 1.7 },
+  sub: { color: '#8a9cc4', maxWidth: '520px', marginBottom: '2.5rem', fontWeight: 300, lineHeight: 1.7 },
   actions: { display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '4rem' },
-  btnPrimary: { background: 'linear-gradient(135deg, #4f8ef7, #7c3aed)', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif", transition: 'all .25s' },
+  btnPrimary: { background: 'linear-gradient(135deg, #4f8ef7, #7c3aed)', color: '#fff', border: 'none', padding: '14px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 500, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" },
   btnSecondary: { background: 'transparent', color: '#f0f4ff', border: '1px solid #253550', padding: '14px 32px', borderRadius: '12px', fontSize: '15px', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" },
-  statsRow: { display: 'flex', gap: '3rem', justifyContent: 'center', flexWrap: 'wrap' },
+  statsRow: { display: 'flex', justifyContent: 'center', flexWrap: 'wrap' },
   statItem: { textAlign: 'center' },
   statNum: { fontFamily: "'Syne', sans-serif", fontSize: '2rem', fontWeight: 800, background: 'linear-gradient(135deg, #f0f4ff, #8a9cc4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' },
   statLabel: { fontSize: '12px', color: '#4a5a7a', marginTop: '2px', textTransform: 'uppercase', letterSpacing: '.05em' },
-  section: { padding: '5rem 2rem', maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 },
+  section: { maxWidth: '1100px', margin: '0 auto', position: 'relative', zIndex: 1 },
   sectionLabel: { fontSize: '11px', color: '#4f8ef7', textTransform: 'uppercase', letterSpacing: '.1em', fontWeight: 600, marginBottom: '1rem' },
-  sectionTitle: { fontFamily: "'Syne', sans-serif", fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.02em', marginBottom: '1rem' },
+  sectionTitle: { fontFamily: "'Syne', sans-serif", fontWeight: 800, lineHeight: 1.1, letterSpacing: '-.02em', marginBottom: '1rem' },
   sectionSub: { color: '#8a9cc4', fontSize: '1rem', fontWeight: 300, maxWidth: '500px', lineHeight: 1.7, marginBottom: '3rem' },
-  stepsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' },
-  stepCard: { background: '#111827', border: '1px solid #1e2d47', borderRadius: '20px', padding: '1.75rem', transition: 'all .3s', cursor: 'default' },
+  stepsGrid: { display: 'grid', gap: '1.5rem' },
+  stepCard: { background: '#111827', border: '1px solid #1e2d47', borderRadius: '20px', padding: '1.75rem', transition: 'all .3s' },
   stepNum: { fontFamily: "'Syne', sans-serif", fontSize: '3rem', fontWeight: 800, color: '#1e2d47', lineHeight: 1, marginBottom: '1rem' },
   stepIcon: { width: '44px', height: '44px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '1rem' },
   stepTitle: { fontFamily: "'Syne', sans-serif", fontSize: '1rem', fontWeight: 700, marginBottom: '.5rem' },
   stepDesc: { fontSize: '13px', color: '#8a9cc4', lineHeight: 1.6, fontWeight: 300 },
-  whyGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginTop: '2rem' },
+  whyGrid: { display: 'grid', gap: '1.25rem', marginTop: '2rem' },
   whyCard: { background: '#111827', border: '1px solid #1e2d47', borderRadius: '16px', padding: '1.5rem' },
   whyIcon: { fontSize: '28px', marginBottom: '.75rem' },
   whyTitle: { fontFamily: "'Syne', sans-serif", fontSize: '1rem', fontWeight: 700, marginBottom: '.4rem' },
   whyDesc: { fontSize: '13px', color: '#8a9cc4', lineHeight: 1.6, fontWeight: 300 },
-  ctaSection: { padding: '3rem 2rem 6rem', position: 'relative', zIndex: 1 },
-  ctaCard: { maxWidth: '600px', margin: '0 auto', background: 'linear-gradient(135deg, rgba(79,142,247,.08), rgba(124,58,237,.08))', border: '1px solid rgba(79,142,247,.15)', borderRadius: '28px', padding: '3rem', textAlign: 'center' },
-  ctaTitle: { fontFamily: "'Syne', sans-serif", fontSize: '2rem', fontWeight: 800, marginBottom: '.75rem', letterSpacing: '-.02em' },
+  ctaSection: { position: 'relative', zIndex: 1 },
+  ctaCard: { maxWidth: '600px', margin: '0 auto', background: 'linear-gradient(135deg, rgba(79,142,247,.08), rgba(124,58,237,.08))', border: '1px solid rgba(79,142,247,.15)', borderRadius: '28px', textAlign: 'center' },
+  ctaTitle: { fontFamily: "'Syne', sans-serif", fontWeight: 800, marginBottom: '.75rem', letterSpacing: '-.02em' },
   ctaSub: { color: '#8a9cc4', fontSize: '1rem', fontWeight: 300, marginBottom: '2rem', lineHeight: 1.6 },
 }
 
