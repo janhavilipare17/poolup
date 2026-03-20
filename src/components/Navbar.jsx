@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { setGlobalWallet } from '../hooks/useWallet'
+import { useScreenSize } from '../hooks/useScreenSize'
 
 function Navbar() {
   const location = useLocation()
+  const { isMobile } = useScreenSize()
   const [wallet, setWallet] = useState(localStorage.getItem('poolup_wallet') || null)
   const [showModal, setShowModal] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -52,32 +54,44 @@ function Navbar() {
       <nav style={styles.nav}>
         <Link to="/" style={styles.logo}>PoolUp</Link>
 
-        {/* desktop links */}
-        <div style={styles.desktopLinks}>
-          <Link to="/" style={{ ...styles.link, ...(location.pathname === '/' ? styles.activeLink : {}) }}>Home</Link>
-          <Link to="/goals" style={{ ...styles.link, ...(location.pathname === '/goals' ? styles.activeLink : {}) }}>Explore</Link>
-          <Link to="/create" style={{ ...styles.link, ...(location.pathname === '/create' ? styles.activeLink : {}) }}>Create</Link>
-          <Link to="/dashboard" style={{ ...styles.link, ...(location.pathname === '/dashboard' ? styles.activeLink : {}) }}>Dashboard</Link>
-          {wallet ? (
-            <div style={styles.walletBadge} onClick={disconnectWallet} title="Click to disconnect">
-              <div style={styles.walletDot}></div>
-              {shortAddr(wallet)}
-            </div>
-          ) : (
-            <button style={styles.connectBtn} onClick={() => setShowModal(true)}>
-              Connect Wallet
-            </button>
-          )}
-        </div>
+        {/* desktop links — hidden on mobile */}
+        {!isMobile && (
+          <div style={styles.desktopLinks}>
+            <Link to="/" style={{ ...styles.link, ...(location.pathname === '/' ? styles.activeLink : {}) }}>Home</Link>
+            <Link to="/goals" style={{ ...styles.link, ...(location.pathname === '/goals' ? styles.activeLink : {}) }}>Explore</Link>
+            <Link to="/create" style={{ ...styles.link, ...(location.pathname === '/create' ? styles.activeLink : {}) }}>Create</Link>
+            <Link to="/dashboard" style={{ ...styles.link, ...(location.pathname === '/dashboard' ? styles.activeLink : {}) }}>Dashboard</Link>
+            {wallet ? (
+              <div style={styles.walletBadge} onClick={disconnectWallet} title="Click to disconnect">
+                <div style={styles.walletDot}></div>
+                {shortAddr(wallet)}
+              </div>
+            ) : (
+              <button style={styles.connectBtn} onClick={() => setShowModal(true)}>
+                Connect Wallet
+              </button>
+            )}
+          </div>
+        )}
 
-        {/* mobile hamburger */}
-        <button style={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? '✕' : '☰'}
-        </button>
+        {/* mobile right side */}
+        {isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {wallet && (
+              <div style={{ ...styles.walletBadge, fontSize: '11px', padding: '4px 10px' }} onClick={disconnectWallet}>
+                <div style={styles.walletDot}></div>
+                {shortAddr(wallet)}
+              </div>
+            )}
+            <button style={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+              {menuOpen ? '✕' : '☰'}
+            </button>
+          </div>
+        )}
       </nav>
 
-      {/* mobile menu */}
-      {menuOpen && (
+      {/* mobile menu dropdown */}
+      {isMobile && menuOpen && (
         <div style={styles.mobileMenu}>
           {[
             { to: '/', label: 'Home' },
@@ -94,13 +108,7 @@ function Navbar() {
               {item.label}
             </Link>
           ))}
-          {wallet ? (
-            <div style={styles.mobileWallet} onClick={() => { disconnectWallet(); setMenuOpen(false) }}>
-              <div style={styles.walletDot}></div>
-              {shortAddr(wallet)}
-              <span style={{ fontSize: '11px', color: '#4a5a7a', marginLeft: 'auto' }}>tap to disconnect</span>
-            </div>
-          ) : (
+          {!wallet && (
             <button style={styles.mobileConnectBtn} onClick={() => { setShowModal(true); setMenuOpen(false) }}>
               Connect Wallet
             </button>
@@ -156,18 +164,13 @@ const styles = {
     WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
     backgroundClip: 'text', textDecoration: 'none',
   },
-  desktopLinks: {
-    display: 'flex', alignItems: 'center', gap: '8px',
-    '@media (max-width: 768px)': { display: 'none' },
-  },
+  desktopLinks: { display: 'flex', alignItems: 'center', gap: '8px' },
   hamburger: {
-    display: 'none',
     background: 'transparent', border: '1px solid #1e2d47',
     color: '#8a9cc4', width: '36px', height: '36px',
     borderRadius: '8px', cursor: 'pointer', fontSize: '16px',
-    alignItems: 'center', justifyContent: 'center',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontFamily: "'DM Sans', sans-serif",
-    '@media (max-width: 768px)': { display: 'flex' },
   },
   link: {
     color: '#8a9cc4', fontSize: '14px', padding: '6px 14px',
@@ -204,13 +207,6 @@ const styles = {
   mobileLinkActive: {
     color: '#f0f4ff', background: 'rgba(255,255,255,0.05)',
     border: '1px solid #1e2d47',
-  },
-  mobileWallet: {
-    background: '#1a2235', border: '1px solid #253550',
-    padding: '12px 16px', borderRadius: '10px', fontSize: '13px',
-    color: '#06d6a0', fontWeight: 500,
-    display: 'flex', alignItems: 'center', gap: '8px',
-    fontFamily: 'monospace', cursor: 'pointer', marginTop: '4px',
   },
   mobileConnectBtn: {
     background: 'linear-gradient(135deg, #4f8ef7, #7c3aed)',
