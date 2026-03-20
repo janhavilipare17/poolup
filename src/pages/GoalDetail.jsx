@@ -41,18 +41,32 @@ function GoalDetail() {
       alert('Please enter a valid amount!')
       return
     }
-    setLoading(true)
-    await new Promise(r => setTimeout(r, 1500))
-    const contribution = {
-      addr: walletAddr || localStorage.getItem('poolup_wallet') || 'GYOUR...WALLET',
-      amount: parseFloat(amount),
-      time: 'just now'
+    if (!walletAddr) {
+      alert('Please connect your wallet first!')
+      return
     }
-    const updated = contributeToGoal(goal.id, contribution)
-    setContributors(updated.contributors)
-    setCollected(updated.collected)
-    setAmount('')
-    setLoading(false)
+    setLoading(true)
+    try {
+      const { contributeOnChain } = await import('../utils/contract')
+      const result = await contributeOnChain(goal.id, parseFloat(amount), walletAddr)
+
+      const contribution = {
+        addr: walletAddr || localStorage.getItem('poolup_wallet') || 'GYOUR...WALLET',
+        amount: parseFloat(amount),
+        time: 'just now',
+        hash: result.hash
+      }
+      const updated = contributeToGoal(goal.id, contribution)
+      setContributors(updated.contributors)
+      setCollected(updated.collected)
+      setAmount('')
+      setLoading(false)
+      alert('Contribution successful! Tx: ' + result.hash)
+    } catch (err) {
+      console.error(err)
+      alert('Error contributing: ' + err.message)
+      setLoading(false)
+    }
   }
 
   const handleCopy = () => {

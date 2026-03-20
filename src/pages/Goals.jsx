@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getGoals } from '../utils/storage'
+import { getGoalsFromChain } from '../utils/contract'
 
 function GoalCard({ goal, onClick }) {
   const pct = Math.round((goal.collected / goal.target) * 100)
@@ -42,12 +43,23 @@ function Goals() {
   const [goals, setGoals] = useState([])
 
   useEffect(() => {
-    const loadGoals = () => setGoals(getGoals())
+    const loadGoals = async () => {
+      try {
+        const chainGoals = await getGoalsFromChain()
+        if (chainGoals.length > 0) {
+          setGoals(chainGoals)
+        } else {
+          setGoals(getGoals())
+        }
+      } catch (err) {
+        console.error(err)
+        setGoals(getGoals())
+      }
+    }
     loadGoals()
     window.addEventListener('focus', loadGoals)
     return () => window.removeEventListener('focus', loadGoals)
   }, [])
-
   const filtered = goals.filter(g => {
     const matchFilter = filter === 'all' || g.status === filter
     const matchSearch = g.name.toLowerCase().includes(search.toLowerCase())

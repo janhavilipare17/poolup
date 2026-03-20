@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { saveGoal } from '../utils/storage'
 import { useWallet } from '../hooks/useWallet'
+import { createGoalOnChain } from '../utils/contract'
+
 const EMOJIS = ['🏖️', '🎉', '🎂', '✈️', '🏕️', '🎮', '🍕', '🎁', '🏋️', '📚', '🎵', '🚗', '🌍', '💡', '🏠', '🎓']
 
 function Create() {
@@ -26,21 +28,40 @@ function Create() {
       alert('Please fill in goal name, amount and deadline!')
       return
     }
+    if (!walletAddr) {
+      alert('Please connect your wallet first!')
+      return
+    }
     setLoading(true)
-    await new Promise(r => setTimeout(r, 1500))
-    saveGoal({
-      name: form.name,
-      desc: form.desc,
-      emoji: form.emoji,
-      target: parseFloat(form.amount),
-      deadline: form.deadline,
-      members: parseInt(form.members) || 2,
-      organiser: walletAddr || 'GYOUR...WALLET'
-    })
-    setLoading(false)
-    setSuccess(true)
-    await new Promise(r => setTimeout(r, 1500))
-    window.location.href = '/goals'
+    try {
+      const deadlineTimestamp = Math.floor(new Date(form.deadline).getTime() / 1000)
+      
+      await createGoalOnChain({
+        name: form.name,
+        description: form.desc || '',
+        target: parseFloat(form.amount),
+        deadline: deadlineTimestamp,
+      }, walletAddr)
+
+      saveGoal({
+        name: form.name,
+        desc: form.desc,
+        emoji: form.emoji,
+        target: parseFloat(form.amount),
+        deadline: form.deadline,
+        members: parseInt(form.members) || 2,
+        organiser: walletAddr
+      })
+
+      setLoading(false)
+      setSuccess(true)
+      await new Promise(r => setTimeout(r, 1500))
+      window.location.href = '/goals'
+    } catch (err) {
+      console.error(err)
+      alert('Error: ' + err.message)
+      setLoading(false)
+    }
   }
 
   if (success) {
