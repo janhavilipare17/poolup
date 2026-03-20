@@ -37,3 +37,25 @@ export const getGoalById = (id) => {
   const goals = getGoals()
   return goals.find(g => g.id === parseInt(id)) || null
 }
+export const getMyGoals = (walletAddress) => {
+  if (!walletAddress) return []
+  const goals = getGoals()
+  return goals.filter(g => g.organiser === walletAddress)
+}
+
+export const getGoalsIContributed = (walletAddress) => {
+  if (!walletAddress) return []
+  const goals = getGoals()
+  return goals.filter(g =>
+    g.contributors.some(c => c.addr === walletAddress)
+  )
+}
+
+export const getMyRelatedGoals = (walletAddress) => {
+  if (!walletAddress) return []
+  const goals = getGoals()
+  return goals.filter(g =>
+    g.organiser === walletAddress ||
+    g.contributors.some(c => c.addr === walletAddress)
+  )
+}
