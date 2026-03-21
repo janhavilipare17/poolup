@@ -104,10 +104,30 @@ function Home() {
   const [stats, setStats] = useState({ goals: 0, pooled: 0, users: 0 })
 
   useEffect(() => {
-    const goals = getGoals()
-    const totalPooled = goals.reduce((sum, g) => sum + g.collected, 0)
-    const totalUsers = goals.reduce((sum, g) => sum + g.contributors.length, 0)
-    setStats({ goals: goals.length, pooled: totalPooled, users: totalUsers })
+    const loadStats = async () => {
+      try {
+        const { getGoalsFromChain } = await import('../utils/contract')
+        const chainGoals = await getGoalsFromChain()
+        if (chainGoals.length > 0) {
+          const totalPooled = chainGoals.reduce((sum, g) => sum + g.collected, 0)
+          const totalUsers = chainGoals.reduce((sum, g) => sum + g.contributors.length, 0)
+          setStats({
+            goals: chainGoals.length,
+            pooled: totalPooled,
+            users: totalUsers
+          })
+          return
+        }
+      } catch (err) {
+        console.error(err)
+      }
+      // fallback to localStorage
+      const goals = getGoals()
+      const totalPooled = goals.reduce((sum, g) => sum + g.collected, 0)
+      const totalUsers = goals.reduce((sum, g) => sum + g.contributors.length, 0)
+      setStats({ goals: goals.length, pooled: totalPooled, users: totalUsers })
+    }
+    loadStats()
   }, [])
 
   return (
