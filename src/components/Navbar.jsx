@@ -6,7 +6,7 @@ import { useScreenSize } from '../hooks/useScreenSize'
 function Navbar() {
   const location = useLocation()
   const { isMobile } = useScreenSize()
-  const [wallet, setWallet] = useState(localStorage.getItem('poolup_wallet') || null)
+ const [wallet, setWallet] = useState(null)
   const [showModal, setShowModal] = useState(false)
 
   const connectWallet = async (walletName) => {

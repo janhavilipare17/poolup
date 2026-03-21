@@ -41,9 +41,11 @@ function Goals() {
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [goals, setGoals] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadGoals = async () => {
+      setLoading(true)
       try {
         const chainGoals = await getGoalsFromChain()
         if (chainGoals.length > 0) {
@@ -55,6 +57,7 @@ function Goals() {
         console.error(err)
         setGoals(getGoals())
       }
+      setLoading(false)
     }
     loadGoals()
     window.addEventListener('focus', loadGoals)
@@ -94,24 +97,29 @@ function Goals() {
         </button>
       </div>
 
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div style={styles.empty}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⏳</div>
+          <div style={styles.emptyTitle}>Loading goals from Stellar...</div>
+        </div>
+      ) : filtered.length === 0 ? (
         <div style={styles.empty}>
           <div style={styles.emptyIcon}>🎯</div>
           <div style={styles.emptyTitle}>
-  {filter === 'completed' ? 'No completed goals yet' : 
-   filter === 'active' ? 'No active goals yet' : 
-   'No goals yet'}
-</div>
-<div style={styles.emptyDesc}>
-  {filter === 'completed' ? 'Goals will appear here once they reach their target' :
-   filter === 'active' ? 'Create a goal to get started!' :
-   'Be the first to create a goal!'}
-</div>
-         {filter === 'all' && (
-  <button style={{ ...styles.createBtn, marginTop: '1rem' }} onClick={() => navigate('/create')}>
-    + Create First Goal
-  </button>
-)}
+            {filter === 'completed' ? 'No completed goals yet' :
+             filter === 'active' ? 'No active goals yet' :
+             'No goals yet'}
+          </div>
+          <div style={styles.emptyDesc}>
+            {filter === 'completed' ? 'Goals will appear here once they reach their target' :
+             filter === 'active' ? 'Create a goal to get started!' :
+             'Be the first to create a goal!'}
+          </div>
+          {filter === 'all' && (
+            <button style={{ ...styles.createBtn, marginTop: '1rem' }} onClick={() => navigate('/create')}>
+              + Create First Goal
+            </button>
+          )}
         </div>
       ) : (
         <div style={styles.grid}>

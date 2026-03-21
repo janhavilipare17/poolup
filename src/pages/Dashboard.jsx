@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getMyRelatedGoals } from '../utils/storage'
 import { useScreenSize } from '../hooks/useScreenSize'
 import { useWallet } from '../hooks/useWallet'
+import { getGoalsFromChain } from '../utils/contract'
 
 const TX_COLORS = {
   contribute: { bg: 'rgba(16,185,129,.1)', color: '#10b981', label: 'Contribute' },
@@ -16,11 +17,33 @@ function Dashboard() {
   const walletAddr = useWallet()
   const [myGoals, setMyGoals] = useState([])
   const [tab, setTab] = useState('all')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (walletAddr) {
+    const loadGoals = async () => {
+      setLoading(true)
+      if (!walletAddr) {
+        setLoading(false)
+        return
+      }
+      try {
+        const chainGoals = await getGoalsFromChain()
+        const myChainGoals = chainGoals.filter(g =>
+          g.organiser === walletAddr ||
+          g.contributors?.some(c => c.addr === walletAddr)
+        )
+        if (myChainGoals.length > 0) {
+          setMyGoals(myChainGoals)
+          setLoading(false)
+          return
+        }
+      } catch (err) {
+        console.error(err)
+      }
       setMyGoals(getMyRelatedGoals(walletAddr))
+      setLoading(false)
     }
+    loadGoals()
   }, [walletAddr])
 
   return (
@@ -37,6 +60,11 @@ function Dashboard() {
             <div style={styles.emptyIcon}>👛</div>
             <div style={styles.emptyTitle}>Connect your wallet first</div>
             <div style={styles.emptyDesc}>Connect your Stellar wallet to see your goals and contributions</div>
+          </div>
+        ) : loading ? (
+          <div style={styles.empty}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⏳</div>
+            <div style={styles.emptyTitle}>Loading your goals from Stellar...</div>
           </div>
         ) : (
           <>

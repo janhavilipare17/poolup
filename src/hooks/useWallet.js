@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-let walletAddress = localStorage.getItem('poolup_wallet') || null
+let walletAddress = null
 const listeners = []
 
 export const setGlobalWallet = (addr) => {

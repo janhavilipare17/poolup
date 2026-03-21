@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getGoalById, contributeToGoal } from '../utils/storage'
 import { useWallet } from '../hooks/useWallet'
+import { getGoalsFromChain, saveContributionLocally, getLocalContributions } from '../utils/contract'
 const COLORS = ['#4f8ef7', '#7c3aed', '#06d6a0', '#f59e0b', '#ef4444', '#ec4899']
 
 function GoalDetail() {
@@ -14,14 +15,48 @@ function GoalDetail() {
   const [collected, setCollected] = useState(0)
   const [contributors, setContributors] = useState([])
   const walletAddr = useWallet()
+  const [goalLoading, setGoalLoading] = useState(true)
+
   useEffect(() => {
-    const found = getGoalById(id)
-    if (found) {
-      setGoal(found)
-      setCollected(found.collected)
-      setContributors(found.contributors)
+    const loadGoal = async () => {
+      setGoalLoading(true)
+      try {
+        const chainGoals = await getGoalsFromChain()
+        const found = chainGoals.find(g => String(g.id) === String(id))
+        if (found) {
+          setGoal(found)
+          setCollected(found.collected)
+          // load local contributions
+          const localContribs = getLocalContributions(id)
+const chainContribs = found.contributors || []
+// merge both — local first then chain
+const allContribs = [...localContribs, ...chainContribs]
+setContributors(allContribs)
+          setGoalLoading(false)
+          return
+        }
+      } catch (err) {
+        console.error(err)
+      }
+      const found = getGoalById(id)
+      if (found) {
+        setGoal(found)
+        setCollected(found.collected)
+        setContributors(found.contributors)
+      }
+      setGoalLoading(false)
     }
+    loadGoal()
   }, [id])
+
+  if (goalLoading) {
+    return (
+      <div style={styles.notFound}>
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
+        <div style={styles.notFoundTitle}>Loading goal...</div>
+      </div>
+    )
+  }
 
   if (!goal) {
     return (
@@ -32,7 +67,6 @@ function GoalDetail() {
       </div>
     )
   }
-
   const pct = Math.min(Math.round((collected / goal.target) * 100), 100)
   const remaining = Math.max(goal.target - collected, 0)
 
@@ -49,22 +83,41 @@ function GoalDetail() {
     try {
       const { contributeOnChain } = await import('../utils/contract')
       const result = await contributeOnChain(goal.id, parseFloat(amount), walletAddr)
-
-      const contribution = {
-        addr: walletAddr || localStorage.getItem('poolup_wallet') || 'GYOUR...WALLET',
+      // save contribution locally to show in UI
+const contribution = {
+        addr: walletAddr,
         amount: parseFloat(amount),
-        time: 'just now',
+        time: new Date().toLocaleString(),
         hash: result.hash
       }
-      const updated = contributeToGoal(goal.id, contribution)
-      setContributors(updated.contributors)
-      setCollected(updated.collected)
+      saveContributionLocally(goal.id, contribution)
+      setContributors(prev => [contribution, ...prev])
+      setCollected(prev => prev + parseFloat(amount))
       setAmount('')
       setLoading(false)
       alert('Contribution successful! Tx: ' + result.hash)
     } catch (err) {
       console.error(err)
       alert('Error contributing: ' + err.message)
+      setLoading(false)
+    }
+  }
+
+  const handleRefund = async () => {
+    if (!walletAddr) {
+      alert('Please connect your wallet first!')
+      return
+    }
+    if (!window.confirm('Are you sure you want to request a refund?')) return
+    setLoading(true)
+    try {
+      const { refundFromChain } = await import('../utils/contract')
+      await refundFromChain(goal.id, walletAddr)
+      alert('Refund successful! Funds returned to contributors.')
+      window.location.href = '/goals'
+    } catch (err) {
+      console.error(err)
+      alert('Refund error: ' + err.message)
       setLoading(false)
     }
   }
@@ -142,6 +195,45 @@ function GoalDetail() {
             </div>
           )}
 
+{goal.status === 'active' && goal.collected < goal.target && (() => {
+  const dl = goal.deadline
+  const dlDate = typeof dl === 'number' ? new Date(dl * 1000) : new Date(dl)
+  dlDate.setHours(23, 59, 59, 0)
+  const deadlinePassed = dlDate < new Date()
+  return (
+    <div style={{ ...styles.refundCard, opacity: deadlinePassed ? 1 : 0.5 }}>
+      <div style={styles.refundTitle}>
+        {deadlinePassed ? 'Deadline passed — goal not reached' : 'Refund available after deadline'}
+      </div>
+      <div style={styles.refundDesc}>
+        {deadlinePassed
+          ? 'The goal deadline has passed and the target was not reached. Contributors can get their money back.'
+          : `Refund will be available on ${dlDate.toLocaleDateString()} if the goal is not reached.`}
+      </div>
+      <button
+        style={{
+          ...styles.refundBtn,
+          opacity: deadlinePassed ? 1 : 0.4,
+          cursor: deadlinePassed ? 'pointer' : 'not-allowed',
+        }}
+        onClick={deadlinePassed ? handleRefund : undefined}
+        disabled={loading || !deadlinePassed}
+      >
+        {loading ? 'Processing...' : deadlinePassed ? 'Request Refund ↩️' : '🔒 Refund locked until deadline'}
+      </button>
+    </div>
+  )
+})()}
+
+          {goal.status === 'refunded' && (
+            <div style={styles.refundCard}>
+              <div style={styles.refundTitle}>Goal refunded</div>
+              <div style={styles.refundDesc}>
+                This goal was not reached. All contributions have been returned to contributors.
+              </div>
+            </div>
+          )}
+
           <div style={styles.shareBanner}>
             <div style={styles.shareText}>
               <strong style={styles.shareTitle}>Share this goal</strong>
@@ -159,7 +251,6 @@ function GoalDetail() {
             <div style={styles.contribTitle}>Contributors</div>
             <div style={styles.contribCount}>{contributors.length} people</div>
           </div>
-
           {contributors.length === 0 ? (
             <div style={styles.noContrib}>No contributions yet — be the first! 🎯</div>
           ) : (
@@ -222,6 +313,10 @@ const styles = {
   contributeInput: { flex: 1, minWidth: '200px', background: '#111827', border: '1px solid #253550', color: '#f0f4ff', padding: '12px 16px', borderRadius: '12px', fontSize: '15px', fontFamily: "'DM Sans', sans-serif", outline: 'none', fontWeight: 500 },
   contributeBtn: { background: 'linear-gradient(135deg, #4f8ef7, #7c3aed)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: "'Syne', sans-serif", whiteSpace: 'nowrap', transition: 'all .2s' },
   contributeHint: { fontSize: '11px', color: '#4a5a7a', marginTop: '.6rem' },
+  refundCard: { background: 'rgba(239,68,68,.05)', border: '1px solid rgba(239,68,68,.2)', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem' },
+  refundTitle: { fontFamily: "'Syne', sans-serif", fontSize: '1rem', fontWeight: 700, color: '#ef4444', marginBottom: '.5rem' },
+  refundDesc: { fontSize: '13px', color: '#8a9cc4', marginBottom: '1rem', lineHeight: 1.6 },
+  refundBtn: { background: 'rgba(239,68,68,.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,.3)', padding: '10px 20px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" },
   shareBanner: { background: 'linear-gradient(135deg, rgba(79,142,247,.08), rgba(124,58,237,.08))', border: '1px solid rgba(79,142,247,.15)', borderRadius: '16px', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' },
   shareText: { flex: 1, minWidth: '150px', display: 'flex', flexDirection: 'column', gap: '2px' },
   shareTitle: { fontSize: '.95rem', fontFamily: "'Syne', sans-serif", fontWeight: 700 },
