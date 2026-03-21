@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getMyRelatedGoals } from '../utils/storage'
 import { useScreenSize } from '../hooks/useScreenSize'
 import { useWallet } from '../hooks/useWallet'
-import { getGoalsFromChain } from '../utils/contract'
+import { getGoalsFromChain, getLocalContributions } from '../utils/contract'
 
 const TX_COLORS = {
   contribute: { bg: 'rgba(16,185,129,.1)', color: '#10b981', label: 'Contribute' },
@@ -33,7 +33,11 @@ function Dashboard() {
           g.contributors?.some(c => c.addr === walletAddr)
         )
         if (myChainGoals.length > 0) {
-          setMyGoals(myChainGoals)
+          const goalsWithContribs = myChainGoals.map(g => ({
+            ...g,
+            contributors: getLocalContributions(String(g.id))
+          }))
+          setMyGoals(goalsWithContribs)
           setLoading(false)
           return
         }
@@ -172,7 +176,7 @@ function Dashboard() {
                 </a>
               </div>
               <div style={{ ...styles.tableWrap, overflowX: isMobile ? 'auto' : 'hidden' }}>
-                {myGoals.flatMap(g => g.contributors.filter(c => c.addr === walletAddr).map(c => ({ ...c, goalName: g.name }))).length === 0 ? (
+                {myGoals.flatMap(g => g.contributors.map(c => ({ ...c, goalName: g.name }))).length === 0 ? (
                   <div style={styles.empty}>
                     <div style={styles.emptyIcon}>📋</div>
                     <div style={styles.emptyTitle}>No transactions yet</div>
@@ -191,8 +195,7 @@ function Dashboard() {
                     <tbody>
                       {myGoals.flatMap(g =>
                         g.contributors
-                          .filter(c => c.addr === walletAddr)
-                          .map((c, i) => (
+                         .map((c, i) => (
                             <tr key={g.id + '-' + i} style={styles.tr}>
                               <td style={styles.td}>{g.name}</td>
                               <td style={{ ...styles.td, fontWeight: 600, color: '#06d6a0' }}>{c.amount} XLM</td>
