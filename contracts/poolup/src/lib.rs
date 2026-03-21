@@ -1,7 +1,7 @@
 #![no_std]
 use soroban_sdk::{
     contract, contractimpl, contracttype,
-    Address, Env, String,
+    Address, Env, String, Vec,
     symbol_short
 };
 
@@ -63,6 +63,11 @@ impl PoolUpContract {
         env.storage().persistent().set(&key, &goal);
         env.storage().persistent().set(&symbol_short!("GCNT"), &count);
 
+        // init empty contributors list
+        let contribs: Vec<Contribution> = Vec::new(&env);
+        let ckey = (symbol_short!("CLIST"), count);
+        env.storage().persistent().set(&ckey, &contribs);
+
         count
     }
 
@@ -89,13 +94,19 @@ impl PoolUpContract {
 
         env.storage().persistent().set(&key, &goal);
 
-        let contrib_key = (symbol_short!("CTRIB"), goal_id, contributor.clone());
-        let contribution = Contribution {
+        // store contribution in list
+        let ckey = (symbol_short!("CLIST"), goal_id);
+        let mut contribs: Vec<Contribution> = env.storage().persistent()
+            .get(&ckey)
+            .unwrap_or(Vec::new(&env));
+
+        contribs.push_back(Contribution {
             contributor,
             amount,
             timestamp: env.ledger().timestamp(),
-        };
-        env.storage().persistent().set(&contrib_key, &contribution);
+        });
+
+        env.storage().persistent().set(&ckey, &contribs);
     }
 
     pub fn get_goal(env: Env, goal_id: u64) -> Goal {
@@ -103,6 +114,13 @@ impl PoolUpContract {
         env.storage().persistent()
             .get(&key)
             .expect("Goal not found")
+    }
+
+    pub fn get_contributors(env: Env, goal_id: u64) -> Vec<Contribution> {
+        let ckey = (symbol_short!("CLIST"), goal_id);
+        env.storage().persistent()
+            .get(&ckey)
+            .unwrap_or(Vec::new(&env))
     }
 
     pub fn get_goal_count(env: Env) -> u64 {

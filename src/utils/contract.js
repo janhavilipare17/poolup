@@ -8,7 +8,7 @@ import {
   rpc,
 } from '@stellar/stellar-sdk'
 
-const CONTRACT_ID = 'CDR4GG5DEFRMTJH7CCBDWYVH35NBFIE4KYLUURGGZINPHDY4V2CCJHGK'
+const CONTRACT_ID = 'CAYDVDZKUHO3KXWRPGOM4DOATC2TJD2LISBA5B32GOL5ZSS6JZGX6WOQ'
 const NETWORK_PASSPHRASE = Networks.TESTNET
 const RPC_URL = 'https://soroban-testnet.stellar.org'
 
@@ -53,6 +53,33 @@ export const getGoalsFromChain = async () => {
       const goalResult = await server.simulateTransaction(goalTx)
       const goal = scValToNative(goalResult.result.retval)
 
+      // fetch contributors for this goal
+      let contributors = []
+      try {
+        const contribTx = new TransactionBuilder(
+          await getAccount(DUMMY_KEY),
+          { fee: BASE_FEE, networkPassphrase: NETWORK_PASSPHRASE }
+        )
+          .addOperation(
+            contract.call(
+              'get_contributors',
+              nativeToScVal(BigInt(i), { type: 'u64' })
+            )
+          )
+          .setTimeout(30)
+          .build()
+
+        const contribResult = await server.simulateTransaction(contribTx)
+        const contribData = scValToNative(contribResult.result.retval)
+        contributors = contribData.map(c => ({
+          addr: c.contributor,
+          amount: Number(c.amount) / 10000000,
+          time: new Date(Number(c.timestamp) * 1000).toLocaleString(),
+        }))
+      } catch (e) {
+        console.error('Error fetching contributors:', e)
+      }
+
       goals.push({
         id: Number(goal.id),
         name: goal.name,
@@ -63,7 +90,7 @@ export const getGoalsFromChain = async () => {
         deadline: new Date(Number(goal.deadline) * 1000).toLocaleDateString(),
         status: goal.status === 0 ? 'active' : goal.status === 1 ? 'completed' : 'refunded',
         emoji: '🎯',
-        contributors: [],
+        contributors,
       })
     }
 
