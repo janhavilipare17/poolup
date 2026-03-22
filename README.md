@@ -230,5 +230,4 @@ MIT License — feel free to use and build on this project.
 
 ---
 
-Built with ❤️ on Stellar blockchain by Janhavi Lipare
-Built with ❤️ on Stellar blockchain
+
