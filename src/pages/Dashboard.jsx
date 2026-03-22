@@ -167,7 +167,7 @@ function Dashboard() {
                 </a>
               </div>
               <div style={{ ...styles.tableWrap, overflowX: isMobile ? 'auto' : 'hidden' }}>
-                {myGoals.flatMap(g => g.contributors.map(c => ({ ...c, goalName: g.name }))).length === 0 ? (
+                {myGoals.flatMap(g => g.contributors.filter(c => c.addr === walletAddr).map(c => ({ ...c, goalName: g.name }))).length === 0 ? (
                   <div style={styles.empty}>
                     <div style={styles.emptyIcon}>📋</div>
                     <div style={styles.emptyTitle}>No transactions yet</div>
@@ -186,6 +186,7 @@ function Dashboard() {
                     <tbody>
                       {myGoals.flatMap(g =>
                         g.contributors
+                        .filter(c => c.addr === walletAddr)
                          .map((c, i) => (
                             <tr key={g.id + '-' + i} style={styles.tr}>
                               <td style={styles.td}>{g.name}</td>
