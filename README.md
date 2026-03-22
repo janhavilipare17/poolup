@@ -14,7 +14,7 @@ A decentralized group savings dApp built on Stellar blockchain using Soroban sma
 
 ##  What is PoolUp?
 
-PoolUp solves a real problem  when a group of friends wants to pool money for a trip, gift, or event, someone always has to be trusted with the funds. PoolUp eliminates this trust problem by locking funds in a Soroban smart contract that automatically releases when the goal is reached, or refunds everyone if the deadline passes.
+PoolUp solves a real problem — when a group of friends wants to pool money for a trip, gift, or event, someone always has to be trusted with the funds. PoolUp eliminates this trust problem by locking funds in a Soroban smart contract that automatically releases when the goal is reached, or refunds everyone if the deadline passes.
 
 ### Real-world use cases
 -  Group trips (Goa trip, Europe vacation)
@@ -41,12 +41,16 @@ PoolUp solves a real problem  when a group of friends wants to pool money for a 
 
 ##  Architecture
 ```
-Frontend (React + Vite)
-        ↕
-Stellar SDK (@stellar/stellar-sdk)
-        ↕
+User Browser
+     ↓
+React Frontend (Vercel)
+     ↓
+@stellar/stellar-sdk
+     ↓
+Soroban RPC (soroban-testnet.stellar.org)
+     ↓
 Soroban Smart Contract (Rust)
-        ↕
+     ↓
 Stellar Testnet Blockchain
 ```
 
@@ -81,6 +85,40 @@ Stellar Testnet Blockchain
 
 ---
 
+##  Project Structure
+```
+poolup/
+├── contracts/
+│   └── poolup/
+│       ├── Cargo.toml
+│       └── src/
+│           └── lib.rs              # Soroban smart contract (Rust)
+├── src/
+│   ├── pages/
+│   │   ├── Home.jsx                # Landing page with stats
+│   │   ├── Goals.jsx               # Explore all goals
+│   │   ├── Create.jsx              # Create new goal
+│   │   ├── GoalDetail.jsx          # Goal page with contribute
+│   │   └── Dashboard.jsx           # My goals and transactions
+│   ├── components/
+│   │   └── Navbar.jsx              # Navigation with wallet connect
+│   ├── hooks/
+│   │   ├── useWallet.js            # Global wallet state
+│   │   └── useScreenSize.js        # Mobile responsive hook
+│   ├── utils/
+│   │   └── contract.js             # All blockchain interactions
+│   ├── App.jsx                     # Routes
+│   └── main.jsx                    # Entry point
+├── public/
+├── Cargo.toml                      # Rust workspace
+├── vercel.json                     # Vercel config
+├── package.json
+├── ARCHITECTURE.md                 # Architecture document
+└── README.md
+```
+
+---
+
 ##  Installation
 ```bash
 # Clone the repository
@@ -94,12 +132,40 @@ npm install
 npm run dev
 ```
 
-### Smart Contract
+### Build Smart Contract
 ```bash
+# Install Rust and Stellar CLI first
+rustup target add wasm32-unknown-unknown
+cargo install --locked stellar-cli
+
+# Build contract
 cd contracts/poolup
 stellar contract build
-stellar contract deploy --wasm target/wasm32v1-none/release/poolup.wasm --source deployer --network testnet
+
+# Deploy to testnet
+stellar contract deploy \
+  --wasm target/wasm32v1-none/release/poolup.wasm \
+  --source deployer \
+  --network testnet
 ```
+
+---
+
+##  Environment Setup
+
+No environment variables needed! The app connects directly to:
+- **Soroban RPC:** `https://soroban-testnet.stellar.org`
+- **Network:** Stellar Testnet
+
+---
+
+##  Wallet Setup for Users
+
+1. Install [Freighter](https://freighter.app) browser extension
+2. Create a new wallet
+3. Switch network to **Testnet**
+4. Get free testnet XLM from [Friendbot](https://friendbot.stellar.org)
+5. Visit [poolup-woad.vercel.app](https://poolup-woad.vercel.app) and connect!
 
 ---
 
@@ -110,10 +176,10 @@ The following wallet addresses have tested PoolUp on Stellar testnet:
 | User | Wallet Address | Action |
 |------|---------------|--------|
 | User 1 | `GBLUMAX4IIPS54AIGD5WXRRAXISG4HLV3BE3YR3SQAD3GZSXRTVJY5GI` | Created goals, contributed |
-| User 2 | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Contributed |
-| User 3 | `GCSX7FR6XYMAPHEJASF2RA3BHQV3PM4DKVW3FTSQV76IIR7GYIGJSW3W` | Contributed |
-| User 4 | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Contributed |
-| User 5 | `GC4PZZW35N6GEORNVODLSNSMZSBY7SN4OFQBIILMEZUJEL4I2ZOMNE5H` | Contributed |
+| User 2 | `GC4PZZW35N6GEORNVODLSNSMZSBY7SN4OFQBIILMEZUJEL4I2ZOMNE5H` | Contributed |
+| User 3 | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Contributed |
+| User 4 | `GCSX7FR6XYMAPHEJASF2RA3BHQV3PM4DKVW3FTSQV76IIR7GYIGJSW3W` | Contributed |
+| User 5 | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Contributed |
 
 ---
 
@@ -123,11 +189,11 @@ The following wallet addresses have tested PoolUp on Stellar testnet:
 
 | User | Feedback | Status |
 |------|----------|--------|
-| User 1 | "Share link should work across devices" |  Fixed — moved to blockchain |
-| User 2 | "Dashboard should only show my goals" |  Fixed — filter by wallet |
-| User 3 | "Refund button should be locked until deadline" | Fixed — deadline check added |
-| User 4 | "Loading state needed when fetching goals" |  Fixed — added loading states |
-| User 5 | "Connect wallet button needed on all pages" |  Fixed — added to navbar |
+| User 1 | Share link should work across devices |  Fixed — moved to blockchain |
+| User 2 | Dashboard should only show my goals |  Fixed — filter by wallet |
+| User 3 | Refund button should be locked until deadline |  Fixed — deadline check added |
+| User 4 | Loading state needed when fetching goals |  Fixed — added loading states |
+| User 5 | Connect wallet button needed on all pages |  Fixed — added to navbar |
 
 ### Iterations Completed
 1. **Moved from localStorage to blockchain** — goals now visible to everyone
@@ -135,17 +201,26 @@ The following wallet addresses have tested PoolUp on Stellar testnet:
 3. **Fixed transaction timeout** — increased from 30s to 300s
 4. **Added loading states** — better UX while fetching from blockchain
 5. **Dashboard wallet filter** — only shows goals connected to your wallet
+6. **On-chain contributors** — updated smart contract to store contributor list
+
+---
+
+##  Verify on Stellar Explorer
+
+- **Contract:** [CAYDVDZ...X6WOQ](https://stellar.expert/explorer/testnet/contract/CAYDVDZKUHO3KXWRPGOM4DOATC2TJD2LISBA5B32GOL5ZSS6JZGX6WOQ)
+- **All transactions** visible on [Stellar Expert Testnet](https://stellar.expert/explorer/testnet)
 
 ---
 
 ##  Roadmap
 
--  Soroban mainnet deployment
--  Real XLM transactions
--  Mobile app (React Native)
--  Goal categories and tags
--  Email/SMS notifications when goal is reached
--  Multi-currency support
+- [ ] Soroban mainnet deployment
+- [ ] Real XLM transactions
+- [ ] Mobile app (React Native)
+- [ ] Goal categories and tags
+- [ ] Email/SMS notifications when goal is reached
+- [ ] Multi-currency support
+- [ ] Gasless transactions via fee bump
 
 ---
 
@@ -155,4 +230,5 @@ MIT License — feel free to use and build on this project.
 
 ---
 
+Built with ❤️ on Stellar blockchain by Janhavi Lipare
 Built with ❤️ on Stellar blockchain
