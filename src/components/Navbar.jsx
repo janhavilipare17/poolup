@@ -84,10 +84,9 @@ function Navbar() {
               Choose your Stellar wallet to connect to PoolUp. Your wallet is your identity — no signup needed.
             </div>
             {[
-              { name: 'Freighter', icon: '⭐', desc: 'Official Stellar wallet browser extension' },
-              { name: 'xBull', icon: '🐂', desc: 'Multi-platform Stellar wallet' },
-              { name: 'Lobstr', icon: '🦞', desc: 'Mobile-friendly Stellar wallet' },
-            ].map(w => (
+  { name: 'Freighter', icon: '⭐', desc: 'Official Stellar wallet browser extension' },
+  { name: 'xBull', icon: '🐂', desc: 'Multi-platform Stellar wallet' },
+].map(w => (
               <div key={w.name} style={styles.walletOption} onClick={() => connectWallet(w.name)}>
                 <div style={styles.walletLogo}>{w.icon}</div>
                 <div>
