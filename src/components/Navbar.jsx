@@ -2,11 +2,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { setGlobalWallet } from '../hooks/useWallet'
 import { useScreenSize } from '../hooks/useScreenSize'
+import { useWallet, setGlobalWallet } from '../hooks/useWallet'
 
 function Navbar() {
   const location = useLocation()
   const { isMobile } = useScreenSize()
- const [wallet, setWallet] = useState(null)
+ const wallet = useWallet()
   const [showModal, setShowModal] = useState(false)
 
   const connectWallet = async (walletName) => {
@@ -19,14 +20,14 @@ function Navbar() {
           return
         }
         const { address } = await freighter.requestAccess()
-        setWallet(address)
+        
         setGlobalWallet(address)
         localStorage.setItem('poolup_wallet', address)
         setShowModal(false)
       } else if (walletName === 'xBull') {
         await window.xBullSDK.connect({ canRequestPublicKey: true, canRequestSign: true })
         const address = await window.xBullSDK.getPublicKey()
-        setWallet(address)
+        
         setGlobalWallet(address)
         localStorage.setItem('poolup_wallet', address)
         setShowModal(false)
@@ -41,7 +42,7 @@ function Navbar() {
   }
 
   const disconnectWallet = () => {
-    setWallet(null)
+   
     setGlobalWallet(null)
     localStorage.removeItem('poolup_wallet')
   }
