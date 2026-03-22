@@ -46,7 +46,10 @@ function Navbar() {
     localStorage.removeItem('poolup_wallet')
   }
 
-  const shortAddr = (addr) => addr ? addr.slice(0, 4) + '...' + addr.slice(-4) : ''
+  const shortAddr = (addr) => {
+  if (!addr) return ''
+  return isMobile ? addr.slice(0, 2) + '..' + addr.slice(-2) : addr.slice(0, 4) + '...' + addr.slice(-4)
+}
 
   return (
     <>
