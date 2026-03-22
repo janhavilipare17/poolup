@@ -107,7 +107,7 @@ const buildSignAndSubmit = async (account, operation, walletAddress) => {
     networkPassphrase: NETWORK_PASSPHRASE,
   })
     .addOperation(operation)
-    .setTimeout(30)
+    .setTimeout(300)
     .build()
 
   const simResult = await server.simulateTransaction(tx)
