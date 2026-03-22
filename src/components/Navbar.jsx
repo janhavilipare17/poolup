@@ -1,6 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
-import { setGlobalWallet } from '../hooks/useWallet'
 import { useScreenSize } from '../hooks/useScreenSize'
 import { useWallet, setGlobalWallet } from '../hooks/useWallet'
 
