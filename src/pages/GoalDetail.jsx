@@ -34,7 +34,25 @@ function GoalDetail() {
       }
       setGoalLoading(false)
     }
+
     loadGoal()
+
+    // poll every 10 seconds for real-time updates
+    const interval = setInterval(async () => {
+      try {
+        const chainGoals = await getGoalsFromChain()
+        const found = chainGoals.find(g => String(g.id) === String(id))
+        if (found) {
+          setCollected(found.collected)
+          setContributors(found.contributors || [])
+          setGoal(found)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }, 10000)
+
+    return () => clearInterval(interval)
   }, [id])
 
   if (goalLoading) {
@@ -73,8 +91,9 @@ const handleContribute = async () => {
       const result = await contributeOnChain(goal.id, parseFloat(amount), walletAddr)
       setAmount('')
       setLoading(false)
-      alert('Contribution successful! Tx: ' + result.hash)
-      // reload from blockchain
+     alert('Contribution successful! Tx: ' + result.hash)
+      // wait for blockchain confirmation then reload
+      await new Promise(r => setTimeout(r, 3000))
       const chainGoals = await getGoalsFromChain()
       const found = chainGoals.find(g => String(g.id) === String(id))
       if (found) {
