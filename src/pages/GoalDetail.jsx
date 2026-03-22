@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getGoalById, contributeToGoal } from '../utils/storage'
 import { useWallet } from '../hooks/useWallet'
-import { getGoalsFromChain, saveContributionLocally, getLocalContributions } from '../utils/contract'
+import { getGoalsFromChain } from '../utils/contract'
 const COLORS = ['#4f8ef7', '#7c3aed', '#06d6a0', '#f59e0b', '#ef4444', '#ec4899']
 
 function GoalDetail() {
@@ -26,23 +25,12 @@ function GoalDetail() {
         if (found) {
           setGoal(found)
           setCollected(found.collected)
-          // load local contributions
-          const localContribs = getLocalContributions(id)
-const chainContribs = found.contributors || []
-// merge both — local first then chain
-const allContribs = [...localContribs, ...chainContribs]
-setContributors(allContribs)
+          setContributors(found.contributors || [])
           setGoalLoading(false)
           return
         }
       } catch (err) {
         console.error(err)
-      }
-      const found = getGoalById(id)
-      if (found) {
-        setGoal(found)
-        setCollected(found.collected)
-        setContributors(found.contributors)
       }
       setGoalLoading(false)
     }
@@ -70,7 +58,7 @@ setContributors(allContribs)
   const pct = Math.min(Math.round((collected / goal.target) * 100), 100)
   const remaining = Math.max(goal.target - collected, 0)
 
-  const handleContribute = async () => {
+const handleContribute = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       alert('Please enter a valid amount!')
       return
@@ -83,19 +71,16 @@ setContributors(allContribs)
     try {
       const { contributeOnChain } = await import('../utils/contract')
       const result = await contributeOnChain(goal.id, parseFloat(amount), walletAddr)
-      // save contribution locally to show in UI
-const contribution = {
-        addr: walletAddr,
-        amount: parseFloat(amount),
-        time: new Date().toLocaleString(),
-        hash: result.hash
-      }
-      saveContributionLocally(goal.id, contribution)
-      setContributors(prev => [contribution, ...prev])
-      setCollected(prev => prev + parseFloat(amount))
       setAmount('')
       setLoading(false)
       alert('Contribution successful! Tx: ' + result.hash)
+      // reload from blockchain
+      const chainGoals = await getGoalsFromChain()
+      const found = chainGoals.find(g => String(g.id) === String(id))
+      if (found) {
+        setCollected(found.collected)
+        setContributors(found.contributors || [])
+      }
     } catch (err) {
       console.error(err)
       alert('Error contributing: ' + err.message)

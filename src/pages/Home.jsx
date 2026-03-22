@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { getGoals } from '../utils/storage'
+
 import { useScreenSize } from '../hooks/useScreenSize'
 
 import { useWallet, setGlobalWallet } from '../hooks/useWallet'
@@ -121,15 +121,11 @@ function Home() {
       } catch (err) {
         console.error(err)
       }
-      // fallback to localStorage
-      const goals = getGoals()
-      const totalPooled = goals.reduce((sum, g) => sum + g.collected, 0)
-      const totalUsers = goals.reduce((sum, g) => sum + g.contributors.length, 0)
-      setStats({ goals: goals.length, pooled: totalPooled, users: totalUsers })
+      // no goals on chain yet
+      setStats({ goals: 0, pooled: 0, users: 0 })
     }
     loadStats()
   }, [])
-
   return (
     <div style={styles.wrapper}>
       <div style={styles.orb1}></div>

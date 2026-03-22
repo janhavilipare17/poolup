@@ -207,16 +207,3 @@ export const refundFromChain = async (goalId, walletAddress) => {
     throw err
   }
 }
-// save contribution locally so we can show it
-export const saveContributionLocally = (goalId, contribution) => {
-  const key = `poolup_contribs_${goalId}`
-  const existing = JSON.parse(localStorage.getItem(key) || '[]')
-  existing.unshift(contribution)
-  localStorage.setItem(key, JSON.stringify(existing))
-}
-
-// get local contributions for a goal
-export const getLocalContributions = (goalId) => {
-  const key = `poolup_contribs_${goalId}`
-  return JSON.parse(localStorage.getItem(key) || '[]')
-}

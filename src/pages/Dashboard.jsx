@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getMyRelatedGoals } from '../utils/storage'
 import { useScreenSize } from '../hooks/useScreenSize'
 import { useWallet } from '../hooks/useWallet'
-import { getGoalsFromChain, getLocalContributions } from '../utils/contract'
+import { getGoalsFromChain } from '../utils/contract'
 
 const TX_COLORS = {
   contribute: { bg: 'rgba(16,185,129,.1)', color: '#10b981', label: 'Contribute' },
@@ -32,19 +31,11 @@ function Dashboard() {
           g.organiser === walletAddr ||
           g.contributors?.some(c => c.addr === walletAddr)
         )
-        if (myChainGoals.length > 0) {
-          const goalsWithContribs = myChainGoals.map(g => ({
-            ...g,
-            contributors: getLocalContributions(String(g.id))
-          }))
-          setMyGoals(goalsWithContribs)
-          setLoading(false)
-          return
-        }
+        setMyGoals(myChainGoals)
       } catch (err) {
         console.error(err)
+        setMyGoals([])
       }
-      setMyGoals(getMyRelatedGoals(walletAddr))
       setLoading(false)
     }
     loadGoals()

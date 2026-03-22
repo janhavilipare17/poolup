@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { saveGoal } from '../utils/storage'
 import { useWallet } from '../hooks/useWallet'
 import { createGoalOnChain } from '../utils/contract'
 
@@ -19,6 +18,7 @@ function Create() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const walletAddr = useWallet()
+
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }))
   }
@@ -35,24 +35,12 @@ function Create() {
     setLoading(true)
     try {
       const deadlineTimestamp = Math.floor(new Date(form.deadline).getTime() / 1000)
-      
       await createGoalOnChain({
         name: form.name,
         description: form.desc || '',
         target: parseFloat(form.amount),
         deadline: deadlineTimestamp,
       }, walletAddr)
-
-      saveGoal({
-        name: form.name,
-        desc: form.desc,
-        emoji: form.emoji,
-        target: parseFloat(form.amount),
-        deadline: form.deadline,
-        members: parseInt(form.members) || 2,
-        organiser: walletAddr
-      })
-
       setLoading(false)
       setSuccess(true)
       await new Promise(r => setTimeout(r, 1500))
@@ -85,11 +73,8 @@ function Create() {
 
       <div style={styles.formWrap}>
         <div style={styles.formCard}>
-
-          {/* top bar */}
           <div style={styles.topBar}></div>
 
-          {/* goal details */}
           <div style={styles.sectionTitle}>
             <span style={styles.sectionLine}></span>
             Goal Details
@@ -131,7 +116,6 @@ function Create() {
             </div>
           </div>
 
-          {/* amount and deadline */}
           <div style={styles.sectionTitle}>
             <span style={styles.sectionLine}></span>
             Amount & Deadline
@@ -182,7 +166,6 @@ function Create() {
             )}
           </div>
 
-          {/* preview */}
           {form.name && (
             <div style={styles.preview}>
               <div style={styles.previewLabel}>Preview</div>
