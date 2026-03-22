@@ -149,9 +149,35 @@ if (typeof signResult === 'string') {
   )
 
   console.log('TX Result:', txResult)
+
+  if (txResult.status === 'ERROR') {
+    throw new Error('Transaction failed: ' + JSON.stringify(txResult.errorResult))
+  }
+
+  // wait for confirmation
+  let confirmed = false
+  for (let i = 0; i < 10; i++) {
+    await new Promise(r => setTimeout(r, 2000))
+    try {
+      const status = await server.getTransaction(txResult.hash)
+      console.log('Confirmation status:', status.status)
+      if (status.status === 'SUCCESS') {
+        confirmed = true
+        break
+      } else if (status.status === 'FAILED') {
+        throw new Error('Transaction failed after submission')
+      }
+    } catch (e) {
+      console.log('Waiting for confirmation...', i + 1)
+    }
+  }
+
+  if (!confirmed) {
+    throw new Error('Transaction not confirmed — please try again')
+  }
+
   return { success: true, hash: txResult.hash }
 }
-
 export const createGoalOnChain = async (goalData, walletAddress) => {
   try {
     const account = await getAccount(walletAddress)
