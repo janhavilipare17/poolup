@@ -138,7 +138,7 @@ The following wallet addresses have tested PoolUp on Stellar testnet:
 
 ---
 
-## 🗺️ Roadmap
+##  Roadmap
 
 -  Soroban mainnet deployment
 -  Real XLM transactions
