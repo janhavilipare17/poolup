@@ -176,24 +176,19 @@ The following wallet addresses have tested PoolUp on Stellar testnet:
 | User | Wallet Address | Action |
 |------|---------------|--------|
 | User 1 | `GBLUMAX4IIPS54AIGD5WXRRAXISG4HLV3BE3YR3SQAD3GZSXRTVJY5GI` | Created goals, contributed |
-| User 2 | `GC4PZZW35N6GEORNVODLSNSMZSBY7SN4OFQBIILMEZUJEL4I2ZOMNE5H` | Contributed |
-| User 3 | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Contributed |
-| User 4 | `GCSX7FR6XYMAPHEJASF2RA3BHQV3PM4DKVW3FTSQV76IIR7GYIGJSW3W` | Contributed |
-| User 5 | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Contributed |
+| User 2 | `GD5B3XLT2WRSACEFMQP35MYWRIMGK3HIJVIRFL6A4KOXFSSH5XJYFTVS` | Contributed |
+| User 3 | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Contributed |
+| User 4 | `GCLTDFYMDJZYLDKETB6Z24CCPHGFQS7NRZFJWT4AUXQZ5SF2BJOME7CN` | Contributed |
+| User 5 | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Contributed |
 
 ---
 
 ##  User Feedback
 
-### Feedback Round 1
+We would love to hear your feedback!  
+Please fill out the form below:
 
-| User | Feedback | Status |
-|------|----------|--------|
-| User 1 | Share link should work across devices |  Fixed — moved to blockchain |
-| User 2 | Dashboard should only show my goals |  Fixed — filter by wallet |
-| User 3 | Refund button should be locked until deadline |  Fixed — deadline check added |
-| User 4 | Loading state needed when fetching goals |  Fixed — added loading states |
-| User 5 | Connect wallet button needed on all pages |  Fixed — added to navbar |
+👉 [Submit Feedback](https://docs.google.com/forms/d/e/1FAIpQLSd4VG8YduygvOaii5r_py_T8esoN_asIaAMuPi-oOeIV-wQjA/viewform)
 
 ### Iterations Completed
 1. **Moved from localStorage to blockchain** — goals now visible to everyone
