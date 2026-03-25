@@ -197,7 +197,7 @@ The following wallet addresses have tested PoolUp on Stellar testnet:
 We would love to hear your feedback!  
 Please fill out the form below:
  [Submit Feedback](https://docs.google.com/forms/d/e/1FAIpQLSd4VG8YduygvOaii5r_py_T8esoN_asIaAMuPi-oOeIV-wQjA/viewform)
- ---
+ 
 > Note: These improvements were implemented during development. While commit messages may not strictly follow the required format, the listed commits correspond directly to user feedback fixes.
 ##  Implemented Feedback (with Commit References)
 
