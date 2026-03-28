@@ -12,7 +12,10 @@ const CONTRACT_ID = 'CAYDVDZKUHO3KXWRPGOM4DOATC2TJD2LISBA5B32GOL5ZSS6JZGX6WOQ'
 const NETWORK_PASSPHRASE = Networks.TESTNET
 const RPC_URL = 'https://soroban-testnet.stellar.org'
 
-const server = new rpc.Server(RPC_URL, { allowHttp: false })
+const server = new rpc.Server(RPC_URL, { 
+  allowHttp: false,
+  headers: { 'X-Client-Name': 'poolup', 'X-Client-Version': '1.0.0' }
+})
 
 const getAccount = async (publicKey) => {
   return await server.getAccount(publicKey)
@@ -23,75 +26,65 @@ const DUMMY_KEY = 'GBLUMAX4IIPS54AIGD5WXRRAXISG4HLV3BE3YR3SQAD3GZSXRTVJY5GI'
 export const getGoalsFromChain = async () => {
   try {
     const contract = new Contract(CONTRACT_ID)
+    const dummyAccount = await server.getAccount(DUMMY_KEY)
 
-    const countTx = new TransactionBuilder(
-      await getAccount(DUMMY_KEY),
+    const buildTx = (operation) => new TransactionBuilder(
+      dummyAccount,
       { fee: BASE_FEE, networkPassphrase: NETWORK_PASSPHRASE }
     )
-      .addOperation(contract.call('get_goal_count'))
+      .addOperation(operation)
       .setTimeout(30)
       .build()
 
-    const countResult = await server.simulateTransaction(countTx)
+    const countResult = await server.simulateTransaction(
+      buildTx(contract.call('get_goal_count'))
+    )
     const count = scValToNative(countResult.result.retval)
     const goals = []
 
     for (let i = 1; i <= Number(count); i++) {
-      const goalTx = new TransactionBuilder(
-        await getAccount(DUMMY_KEY),
-        { fee: BASE_FEE, networkPassphrase: NETWORK_PASSPHRASE }
-      )
-        .addOperation(
-          contract.call(
-            'get_goal',
-            nativeToScVal(BigInt(i), { type: 'u64' })
-          )
-        )
-        .setTimeout(30)
-        .build()
-
-      const goalResult = await server.simulateTransaction(goalTx)
-      const goal = scValToNative(goalResult.result.retval)
-
-      // fetch contributors for this goal
-      let contributors = []
       try {
-        const contribTx = new TransactionBuilder(
-          await getAccount(DUMMY_KEY),
-          { fee: BASE_FEE, networkPassphrase: NETWORK_PASSPHRASE }
+        const goalResult = await server.simulateTransaction(
+          buildTx(contract.call('get_goal', nativeToScVal(BigInt(i), { type: 'u64' })))
         )
-          .addOperation(
-            contract.call(
-              'get_contributors',
-              nativeToScVal(BigInt(i), { type: 'u64' })
-            )
+        const goal = scValToNative(goalResult.result.retval)
+
+        let contributors = []
+        try {
+          const contribResult = await server.simulateTransaction(
+            buildTx(contract.call('get_contributors', nativeToScVal(BigInt(i), { type: 'u64' })))
           )
-          .setTimeout(30)
-          .build()
+          const contribData = scValToNative(contribResult.result.retval)
+          contributors = contribData.map(c => ({
+            addr: c.contributor,
+            amount: Number(c.amount) / 10000000,
+            time: new Date(Number(c.timestamp) * 1000).toLocaleString(),
+          }))
+        } catch (e) {
+          console.error('Error fetching contributors for goal', i, e)
+        }
 
-        const contribResult = await server.simulateTransaction(contribTx)
-        const contribData = scValToNative(contribResult.result.retval)
-        contributors = contribData.map(c => ({
-          addr: c.contributor,
-          amount: Number(c.amount) / 10000000,
-          time: new Date(Number(c.timestamp) * 1000).toLocaleString(),
-        }))
-      } catch (e) {
-        console.error('Error fetching contributors:', e)
+        goals.push({
+          id: Number(goal.id),
+          name: goal.name,
+          desc: goal.description,
+          target: Number(goal.target) / 10000000,
+          collected: Number(goal.collected) / 10000000,
+          organiser: goal.organiser,
+          deadline: new Date(Number(goal.deadline) * 1000).toLocaleDateString(),
+          status: (() => {
+            const s = Number(goal.status)
+            if (s === 0) return 'active'
+            if (s === 1) return 'completed'
+            if (s === 2) return 'refunded'
+            return 'active'
+          })(),
+          emoji: '🎯',
+          contributors,
+        })
+      } catch (goalErr) {
+        console.error('Skipping broken goal', i, goalErr)
       }
-
-      goals.push({
-        id: Number(goal.id),
-        name: goal.name,
-        desc: goal.description,
-        target: Number(goal.target) / 10000000,
-        collected: Number(goal.collected) / 10000000,
-        organiser: goal.organiser,
-        deadline: new Date(Number(goal.deadline) * 1000).toLocaleDateString(),
-        status: goal.status === 0 ? 'active' : goal.status === 1 ? 'completed' : 'refunded',
-        emoji: '🎯',
-        contributors,
-      })
     }
 
     return goals
