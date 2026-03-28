@@ -199,6 +199,10 @@ Please fill out the form below:
  [Submit Feedback](https://docs.google.com/forms/d/e/1FAIpQLSd4VG8YduygvOaii5r_py_T8esoN_asIaAMuPi-oOeIV-wQjA/viewform)
  
 > Note: These improvements were implemented during development. While commit messages may not strictly follow the required format, the listed commits correspond directly to user feedback fixes.
+
+## Security
+[View Security Checklist](./SECURITY_CHECKLIST.md)
+
 ##  Implemented Feedback (with Commit References)
 
 > Note: The following commits correspond to user feedback implementations.
