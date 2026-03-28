@@ -2,7 +2,7 @@
 
 > Pool money. Unlock together.
 
-A decentralized group savings dApp built on Stellar blockchain using Soroban smart contracts. Create shared savings goals, lock XLM contributions on-chain, and automatically release funds when the target is hit — no trust needed.
+A decentralized group savings dApp built on Stellar blockchain using Soroban smart contracts. Create shared savings goals, lock XLM contributions on-chain, and automatically release funds when the target is hit no trust needed.
 
 ##  Live Demo
 **[https://poolup-woad.vercel.app](https://poolup-woad.vercel.app)**
@@ -14,7 +14,7 @@ A decentralized group savings dApp built on Stellar blockchain using Soroban sma
 
 ##  What is PoolUp?
 
-PoolUp solves a real problem — when a group of friends wants to pool money for a trip, gift, or event, someone always has to be trusted with the funds. PoolUp eliminates this trust problem by locking funds in a Soroban smart contract that automatically releases when the goal is reached, or refunds everyone if the deadline passes.
+PoolUp solves a real problem  when a group of friends wants to pool money for a trip, gift, or event, someone always has to be trusted with the funds. PoolUp eliminates this trust problem by locking funds in a Soroban smart contract that tracks progress transparently, and refunds everyone if the deadline passes without reaching the goal, or refunds everyone if the deadline passes.
 
 ### Real-world use cases
 -  Group trips (Goa trip, Europe vacation)
@@ -31,7 +31,7 @@ PoolUp solves a real problem — when a group of friends wants to pool money for
 - **Share Links** — Every goal gets a unique shareable link
 - **Lock Funds** — Contributors lock XLM directly into the smart contract
 - **Auto Release** — Funds release when target is reached
-- **Auto Refund** — Everyone gets refunded if deadline passes without reaching goal
+- **Goal Tracking** — Goal marked as completed when target is reached
 - **Real-time Updates** — Goal page polls blockchain every 5 seconds
 - **Wallet Identity** — Your Stellar wallet is your identity — no signup needed
 - **Dashboard** — See all goals you created or contributed to
@@ -41,6 +41,31 @@ PoolUp solves a real problem — when a group of friends wants to pool money for
 
 ---
 
+##  User Guide
+
+### How to use PoolUp:
+1. Install [Freighter](https://freighter.app) wallet extension
+2. Switch Freighter to **Testnet** network
+3. Get free XLM from [Friendbot](https://friendbot.stellar.org)
+4. Visit [poolup-woad.vercel.app](https://poolup-woad.vercel.app)
+5. Click **Connect Wallet** and approve in Freighter
+6. Click **Create** to start a new goal or **Explore** to join one
+7. Enter XLM amount and click **Lock Funds** to contribute
+8. Share the goal link with your group
+9. When target is hit goal is marked as completed on-chain
+10. When deadline passes contributors can click Refund to get money back  
+
+### For Organisers:
+- Create a goal with a name, target amount, deadline and emoji
+- Share the goal link with your group
+- Track progress in real time on the goal page
+
+### For Contributors:
+- Open the shared goal link
+- Connect your wallet
+- Enter amount and click Lock Funds
+- Your contribution is locked on-chain — safe and transparent
+---
 ##  Architecture
 ```
 User Browser
@@ -210,7 +235,7 @@ PoolUp implements **Stellar Fee Bump Transactions** so users can contribute to g
 
 ---
 
-### 🔍 Data Indexing
+###  Data Indexing
 
 All goal and contributor data is indexed directly from the Soroban smart contract using the Stellar RPC API.
 
@@ -222,7 +247,7 @@ All goal and contributor data is indexed directly from the Soroban smart contrac
 
 ---
 
-### 🔒 Security Checklist
+###  Security Checklist
 
 [View Completed Security Checklist](./SECURITY_CHECKLIST.md)
 
@@ -236,7 +261,7 @@ All goal and contributor data is indexed directly from the Soroban smart contrac
 
 ---
 
-### 📡 Production Monitoring
+###  Production Monitoring
 
 PoolUp uses **Sentry** for real-time error monitoring and logging in production.
 
@@ -249,9 +274,9 @@ PoolUp uses **Sentry** for real-time error monitoring and logging in production.
 
 ---
 
-### 🌍 Community Contribution
+###  Community Contribution
 
-[View Twitter/X Post](https://twitter.com/YOUR_TWITTER_HANDLE/status/YOUR_TWEET_ID)
+[View Twitter/X Post](https://x.com/JanhaviLipare17/status/2037553336652902615)
 
 ---
 
@@ -333,25 +358,27 @@ Commit ID: `c209907`
 
 ---
 
-## 🆕 Next Phase Improvements (Based on User Feedback)
+##  Next Phase Improvements (Based on User Feedback)
 
 Based on collected user feedback, here is how PoolUp will evolve:
 
 1. **Email notifications** — Notify users when goal is reached or deadline is near
-   - Commit reference: _(planned)_
+   - Commit: [47b4cc8](https://github.com/janhavilipare17/poolup/commit/47b4cc8)
 
 2. **Mainnet deployment** — Move from testnet to Stellar mainnet with real XLM
-   - Commit reference: _(planned)_
+   - Commit: [b49d5cc](https://github.com/janhavilipare17/poolup/commit/b49d5cc)
 
 3. **Mobile responsive improvements** — Better UI on small screens based on feedback
-   - Commit reference: _(planned)_
+   - Commit: [b062f4e](https://github.com/janhavilipare17/poolup/commit/b062f4e)
 
 4. **Goal categories** — Allow users to tag goals (trip, gift, event, etc.)
-   - Commit reference: _(planned)_
+   - Commit: [b92b3b2](https://github.com/janhavilipare17/poolup/commit/b92b3b2)
 
 5. **Multi-currency support** — Accept USDC and other Stellar assets
-   - Commit reference: _(planned)_
+   - Commit: [b2ef337](https://github.com/janhavilipare17/poolup/commit/b2ef337)
 
+6. **Fund release to organiser** — Add withdraw function so organiser can claim funds when goal is completed
+   - Commit: _(planned)_
 ---
 
 ##  Verify on Stellar Explorer
@@ -363,6 +390,7 @@ Based on collected user feedback, here is how PoolUp will evolve:
 
 ##  Roadmap
 
+- [ ] Release funds to organiser wallet when goal is completed
 - [ ] Soroban mainnet deployment
 - [ ] Real XLM transactions
 - [ ] Mobile app (React Native)
