@@ -7,7 +7,7 @@ import {
   scValToNative,
   rpc,
 } from '@stellar/stellar-sdk'
-
+import { submitWithFeeBump, isSponsorshipAvailable } from './feeBump'
 const CONTRACT_ID = 'CAYDVDZKUHO3KXWRPGOM4DOATC2TJD2LISBA5B32GOL5ZSS6JZGX6WOQ'
 const NETWORK_PASSPHRASE = Networks.TESTNET
 const RPC_URL = 'https://soroban-testnet.stellar.org'
@@ -126,38 +126,40 @@ const buildSignAndSubmit = async (account, operation, walletAddress) => {
     { networkPassphrase: NETWORK_PASSPHRASE }
   )
 
-  console.log('Sign result:', signResult)
-  console.log('Sign result type:', typeof signResult)
-
   let signedXDR = null
-if (typeof signResult === 'string') {
-  signedXDR = signResult
-} else if (signResult && signResult.signedTxXdr) {
-  signedXDR = signResult.signedTxXdr
-} else if (signResult && signResult.signedTransaction) {
-  signedXDR = signResult.signedTransaction
-} else if (signResult && signResult.xdr) {
-  signedXDR = signResult.xdr
-}
-
-  console.log('signedXDR:', signedXDR)
+  if (typeof signResult === 'string') {
+    signedXDR = signResult
+  } else if (signResult && signResult.signedTxXdr) {
+    signedXDR = signResult.signedTxXdr
+  } else if (signResult && signResult.signedTransaction) {
+    signedXDR = signResult.signedTransaction
+  } else if (signResult && signResult.xdr) {
+    signedXDR = signResult.xdr
+  }
 
   if (!signedXDR) throw new Error('Could not get signed transaction')
 
+  // ── FEE SPONSORSHIP ──────────────────────────────────────
+  // If sponsor is configured, use fee bump (user pays 0 fees)
+  // Otherwise fall back to normal submission
+  // ─────────────────────────────────────────────────────────
+  if (isSponsorshipAvailable()) {
+    console.log('✅ Using fee sponsorship — user pays 0 fees!')
+    return await submitWithFeeBump(signedXDR)
+  }
+
+  // Fallback: normal submission
+  console.log('⚠️ No sponsor configured, submitting normally')
   const txResult = await server.sendTransaction(
     TransactionBuilder.fromXDR(signedXDR, NETWORK_PASSPHRASE)
   )
-
-  console.log('TX Result:', txResult)
 
   if (txResult.status === 'ERROR') {
     throw new Error('Transaction failed: ' + JSON.stringify(txResult.errorResult))
   }
 
-  // wait for confirmation
-  // wait for confirmation
   await new Promise(r => setTimeout(r, 4000))
-  
+
   try {
     const status = await server.getTransaction(txResult.hash)
     console.log('Final status:', status.status)
@@ -165,7 +167,6 @@ if (typeof signResult === 'string') {
       throw new Error('Transaction failed on blockchain')
     }
   } catch (e) {
-    // if getTransaction throws, transaction is still pending — treat as success
     console.log('Transaction pending or confirmed:', e.message)
   }
 

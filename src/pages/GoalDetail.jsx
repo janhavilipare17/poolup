@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useWallet } from '../hooks/useWallet'
 import { getGoalsFromChain } from '../utils/contract'
+import GaslessBadge from '../components/GaslessBadge'
 const COLORS = ['#4f8ef7', '#7c3aed', '#06d6a0', '#f59e0b', '#ef4444', '#ec4899']
 
 function GoalDetail() {
@@ -177,6 +178,7 @@ const handleContribute = async () => {
           {goal.status === 'active' && (
             <div style={styles.contributeCard}>
               <div style={styles.contributeTitle}>Lock your contribution</div>
+              <GaslessBadge />
               <div style={styles.contributeRow}>
                 <input
                   style={styles.contributeInput}
