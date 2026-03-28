@@ -61,7 +61,7 @@ function Navbar() {
           <Link to="/goals" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/goals' ? styles.activeLink : {}) }}>Explore</Link>
           <Link to="/create" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/create' ? styles.activeLink : {}) }}>Create</Link>
           <Link to="/dashboard" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/dashboard' ? styles.activeLink : {}) }}>Dashboard</Link>
-
+          <Link to="/metrics" style={{ ...styles.link, padding: isMobile ? '5px 8px' : '6px 14px', fontSize: isMobile ? '12px' : '14px', ...(location.pathname === '/metrics' ? styles.activeLink : {}) }}>Metrics</Link>
           {wallet ? (
   <div style={{ ...styles.walletBadge, fontSize: isMobile ? '11px' : '12px', padding: isMobile ? '5px 8px' : '6px 14px' }} onClick={disconnectWallet} title="Click to disconnect">
     <div style={styles.walletDot}></div>
