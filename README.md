@@ -8,7 +8,7 @@ A decentralized group savings dApp built on Stellar blockchain using Soroban sma
 **[https://poolup-woad.vercel.app](https://poolup-woad.vercel.app)**
 
 ##  Demo Video
-[Watch Demo Video](https://drive.google.com/file/d/1_rufMCd__c5nKx9FNYoh3qrd32TfsSYe/view?usp=drive_link)
+[Watch Demo Video](https://drive.google.com/file/d/1-pSSTkZUWUeGciQ0l8s1H5BDvX-nKXxf/view?usp=drive_link)
 
 ---
 
@@ -277,22 +277,6 @@ PoolUp uses **Sentry** for real-time error monitoring and logging in production.
 ###  Community Contribution
 
 [View Twitter/X Post](https://x.com/JanhaviLipare17/status/2037553336652902615)
-
----
-
-##  Testnet Users
-
-The following wallet addresses have tested PoolUp on Stellar testnet:
-
-| User | Wallet Address | Action |
-|------|---------------|--------|
-| User 1 | `GBLUMAX4IIPS54AIGD5WXRRAXISG4HLV3BE3YR3SQAD3GZSXRTVJY5GI` | Created goals, contributed |
-| User 2 | `GD5B3XLT2WRSACEFMQP35MYWRIMGK3HIJVIRFL6A4KOXFSSH5XJYFTVS` | Contributed |
-| User 3 | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Contributed |
-| User 4 | `GCLTDFYMDJZYLDKETB6Z24CCPHGFQS7NRZFJWT4AUXQZ5SF2BJOME7CN` | Contributed |
-| User 5 | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Contributed |
-
-> ⚠️ Add 25 more wallet addresses here to reach 30+ for Level 6 requirement
 
 ---
 
