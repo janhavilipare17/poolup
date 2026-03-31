@@ -296,13 +296,13 @@ We would love to hear your feedback!
 
 ##  User Feedback Summary
 
-| User | Feedback | Status |
-|------|----------|--------|
-| User 1 | Share link should work across devices | ✅ Fixed |
-| User 2 | Dashboard should only show my goals | ✅ Fixed |
-| User 3 | Refund button should be locked until deadline | ✅ Fixed |
-| User 4 | Loading state needed when fetching goals | ✅ Fixed |
-| User 5 | Connect wallet button needed on all pages | ✅ Fixed |
+| User | Feedback | Status | Commit |
+|------|----------|--------|--------|
+| User 1 | Share link should work across devices | ✅ Fixed | [13e42ab](https://github.com/janhavilipare17/poolup/commit/13e42ab) |
+| User 2 | Dashboard should only show my goals | ✅ Fixed | [37524ee](https://github.com/janhavilipare17/poolup/commit/37524ee) |
+| User 3 | Refund button should be locked until deadline | ✅ Fixed | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
+| User 4 | Loading state needed when fetching goals | ✅ Fixed | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
+| User 5 | Connect wallet button needed on all pages | ✅ Fixed | [c209907](https://github.com/janhavilipare17/poolup/commit/c209907) |
 
 ---
 
