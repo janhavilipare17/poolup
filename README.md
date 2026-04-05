@@ -334,12 +334,11 @@ PoolUp uses **Sentry** for real-time error monitoring and logging in production.
 
 | User Name | User Email | Wallet Address | Feedback | Commit ID |
 |-----------|------------|----------------|----------|-----------|
-| Sayali Nighot | sayali19425@gmail.com | `GD5B3XLT2WRSACEFMQP35MYWRIMGK3HIJVIRFL6A4KOXFSSH5XJYFTVS` | Share link should work across devices | [13e42ab](https://github.com/janhavilipare17/poolup/commit/13e42ab) |
-| Aniket Bhilare | bhilareaniket2424@gmail.com | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Dashboard should only show my goals | [37524ee](https://github.com/janhavilipare17/poolup/commit/37524ee) |
-| Vaibhavi Jadhav | vaishhhh0014@gmail.com | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Refund button should be locked until deadline | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
-| Nayan Palande | npalande2106@gmail.com | `GDJCKA3JG2BUJO5LJLD66DATXE4HCJG62XPLFJKNJRVQSBA3IPB2BWQ3` | Clear instructions improved usability | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
-| Sarthak Dhere | sarthakdhere0217@gmail.com | `GCRYPAQB3TFLQE727TA3R723QIEPTP5KCMP7OMH4HVXNLCEUKPD4AZJP` | More guidance needed for new users | [c209907](https://github.com/janhavilipare17/poolup/commit/c209907) |
-| Suraj Shinde | shindesuraj54995@gmail.com | `GARGMJJCMNGYHZPHPS47NANURZVT6EQIW2NDCE6PUFIC3YRCMDRBUDGD` | Add contribution limit feature | [562b968](https://github.com/janhavilipare17/poolup/commit/562b968) |
+| Jadhav Vaibhavi | vaibhavijadhav@gmail.com | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Share link should work across devices | [13e42ab](https://github.com/janhavilipare17/poolup/commit/13e42ab) |
+| Nayan Palande | npalande2106@gmail.com | `GBYUTGCNPXOLSHPZ6SCJQCCS3GSYLE2MXQQO6DFUQ2E7G4Y4NKSL2PFQ` | Refund button should be locked until deadline | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
+| Sayali Nighot | sayali19425@gmail.com | `GBLUQBHZGX5PM2A6FX45L3ONQVL56RNEUJ2BUSYM47A5N3Z37VPJPQ2Y` | Dashboard should only show my goals | [37524ee](https://github.com/janhavilipare17/poolup/commit/37524ee) |
+| Aniket Bhilare | bhilareaniket2424@gmail.com | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Loading/fetching not working properly | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
+| Avinash Bhilare | avinashbhilare18@gmail.com | `GC4PZZW35N6GEORNVODLSNSMZSBY7SN4OFQBIILMEZUJEL4I2ZOMNE5H` | Connect wallet button should appear on all pages | [c209907](https://github.com/janhavilipare17/poolup/commit/c209907) |
 
  ---
 ##  User Feedback Summary
