@@ -334,12 +334,13 @@ PoolUp uses **Sentry** for real-time error monitoring and logging in production.
 
 | User Name | User Email | Wallet Address | Feedback | Commit ID |
 |-----------|------------|----------------|----------|-----------|
-| Jadhav Vaibhavi | vaibhavijadhav@gmail.com | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Share link should work across devices | [13e42ab](https://github.com/janhavilipare17/poolup/commit/13e42ab) |
-| Nayan Palande | npalande2106@gmail.com | `GBYUTGCNPXOLSHPZ6SCJQCCS3GSYLE2MXQQO6DFUQ2E7G4Y4NKSL2PFQ` | Refund button should be locked until deadline | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
-| Sayali Nighot | sayali19425@gmail.com | `GBLUQBHZGX5PM2A6FX45L3ONQVL56RNEUJ2BUSYM47A5N3Z37VPJPQ2Y` | Dashboard should only show my goals | [37524ee](https://github.com/janhavilipare17/poolup/commit/37524ee) |
-| Aniket Bhilare | bhilareaniket2424@gmail.com | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Loading/fetching not working properly | [f51fc75](https://github.com/janhavilipare17/poolup/commit/f51fc75) |
-| Avinash Bhilare | avinashbhilare18@gmail.com | `GC4PZZW35N6GEORNVODLSNSMZSBY7SN4OFQBIILMEZUJEL4I2ZOMNE5H` | Connect wallet button should appear on all pages | [c209907](https://github.com/janhavilipare17/poolup/commit/c209907) |
+| Jadhav Vaibhavi | vaibhavijadhav@gmail.com | `GDBIJAOFPMGQWDUUQTJ3YFHI44MWHQHPALJQG7ZDA7D5WWEDKJYA4OHA` | Share link should work across devices | [7cf2c83](https://github.com/janhavilipare17/poolup/commit/7cf2c83) |
+| Nayan Palande | npalande2106@gmail.com | `GBYUTGCNPXOLSHPZ6SCJQCCS3GSYLE2MXQQO6DFUQ2E7G4Y4NKSL2PFQ` | Refund button should be locked until deadline | [7cf2c83](https://github.com/janhavilipare17/poolup/commit/7cf2c83) |
+| Sayali Nighot | sayali19425@gmail.com | `GBLUQBHZGX5PM2A6FX45L3ONQVL56RNEUJ2BUSYM47A5N3Z37VPJPQ2Y` | Dashboard should only show my goals | [7cf2c83](https://github.com/janhavilipare17/poolup/commit/7cf2c83) |
+| Aniket Bhilare | bhilareaniket2424@gmail.com | `GDAV623NX6QVNZUPGLQ7PNYAY42WSYMVCMHZMUDW74KJLEB2SIOEJQZG` | Loading/fetching not working properly | [7cf2c83](https://github.com/janhavilipare17/poolup/commit/7cf2c83) |
+| Avinash Bhilare | avinashbhilare18@gmail.com | `GC4PZZW35N6GEORNVODLSNSMZSBY7SN4OFQBIILMEZUJEL4I2ZOMNE5H` | Connect wallet button on all pages | [7cf2c83](https://github.com/janhavilipare17/poolup/commit/7cf2c83) |
 
+> Note: All 5 user feedback improvements were implemented and committed together in commit [7cf2c83](https://github.com/janhavilipare17/poolup/commit/7cf2c83) which includes dashboard filter, blockchain sharing, refund logic, loading states, and wallet access fixes.
  ---
 ##  User Feedback Summary
 
